@@ -1,0 +1,18 @@
+# Compiled files
+*.o
+*.out
+*.exe
+
+# Build folders
+build/
+bin/
+
+# IDE files
+.vscode/
+.idea/
+
+# macOS
+.DS_Store
+
+# Temporary files
+*.tmp
