@@ -3,7 +3,7 @@
 #include <iostream>
 #include <string>
 using namespace std;
-const int DAYS = 5;
+const int DAYS = 6;
 const int SLOTS = 10;
 const int MAX_REQUESTS = 100;
 
@@ -47,4 +47,20 @@ struct UndoItem
         slot = s;
         duration = dur;
     }
-};
+    class Timetable
+    {
+    private:
+        SchedulingRequest requestQueue[MAX_REQUESTS];
+        int front;
+        int rear;
+        int queueSize;
+        UndoItem undoStack[MAX_REQUESTS];
+        int top;    
+        SchedulingRequest priorityHeap[MAX_REQUESTS];
+        int heapSize;
+        void heapifyUp(int index);
+        void heapifyDown(int index);
+    public:
+        Timetable();
+        bool enqueueRequest( SchedulingRequest request);
+    
