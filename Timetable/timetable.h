@@ -47,6 +47,7 @@ struct UndoItem
         slot = s;
         duration = dur;
     }
+};
     class Timetable
     {
     private:
@@ -60,7 +61,47 @@ struct UndoItem
         int heapSize;
         void heapifyUp(int index);
         void heapifyDown(int index);
-    public:
-        Timetable();
-        bool enqueueRequest( SchedulingRequest request);
-    
+
+        public:
+
+    Timetable();
+    // Request Queue
+    bool enqueueRequest(SchedulingRequest request);
+    SchedulingRequest dequeueRequest();
+    bool requestQueueEmpty() const;
+    bool requestQueueFull() const;
+    void displayRequestQueue() const;
+
+    // Priority Queue
+    bool addPriorityRequest(SchedulingRequest request);
+    SchedulingRequest getHighestPriorityRequest();
+    bool priorityQueueEmpty() const;
+    void displayPriorityQueue() const;
+
+    // Timetable operations
+    bool addClass(int day, int slot, SchedulingRequest request);
+    bool removeClass(int day, int slot);
+    bool isFree(int day, int slot) const;
+
+    // Scheduling
+    bool scheduleNextRequest();
+    void scheduleAllRequests();
+
+    // Undo
+    void pushUndo(int day, int slot, int duration);
+    void undo();
+
+    // Display
+    void display() const;
+    void displayDay(int day) const;
+
+    // Operator overloading
+    bool operator==(const Timetable& other) const;
+    friend ostream& operator<<(
+        ostream& output,
+        const Timetable& timetable
+    );
+
+    ~Timetable();
+};
+#endif
