@@ -1,7 +1,7 @@
 #ifndef TIMESLOT_REQUEST_H
 #define TIMESLOT_REQUEST_H 
-
 #include<string>
+
 using namespace std;
 
 enum Day { MON,TUE,WED,THU,FRI,SAT};
@@ -33,9 +33,9 @@ class schedulingRequest{
 };
 
 struct node{
-    schedulingRequest date;
+    schedulingRequest data;
     node* next;
-    node(schedulingRequet r);
+    node(schedulingRequest r);
 };
 
 class requestQueue{
@@ -48,7 +48,7 @@ class requestQueue{
     void enqueue(schedulingRequest r);
     schedulingRequest dequeue();
     bool isEmpty() const;
-    ~reuquestQueue();
+    ~requestQueue();
 };
 
 const int MAX_SLOTS=6;
