@@ -59,6 +59,8 @@ struct UndoItem
         int top;    
         SchedulingRequest priorityHeap[MAX_REQUESTS];
         int heapSize;
+        SchedulingRequest timetable[DAYS][SLOTS];
+        bool occupied[DAYS][SLOTS];
         void heapifyUp(int index);
         void heapifyDown(int index);
 
