@@ -1,5 +1,4 @@
 #include "timetable.h"
-// Constructor
 Timetable::Timetable()
 {
     front = 0;
@@ -15,7 +14,7 @@ Timetable::Timetable()
         }
     }
 }
-// Request Queue 
+//request Q
 
 bool Timetable::enqueueRequest(SchedulingRequest request)
 {
