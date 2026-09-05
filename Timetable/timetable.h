@@ -89,13 +89,6 @@ struct UndoItem
     void display() const;
     void displayDay(int day) const;
 
-    // Operator overloading
-    bool operator==(const Timetable& other) const;
-    friend ostream& operator<<(
-        ostream& output,
-        const Timetable& timetable
-    );
-
     ~Timetable();
 };
 #endif
