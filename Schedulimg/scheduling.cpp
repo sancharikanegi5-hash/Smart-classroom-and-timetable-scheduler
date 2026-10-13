@@ -23,3 +23,26 @@ void requestQueue::enqueue(schedulingRequest r) {
     }
     count++;   // step 4: don't forget to update count
 }
+
+schedulingRequest requestQueue::dequeue() {
+    if (front == nullptr) {
+        return schedulingRequest();   // queue empty, return a default (invalid) request
+    }
+
+    node* nodeToDelete = front;
+    schedulingRequest removedRequest = nodeToDelete->data;
+
+    front = front->next;              // move front forward
+
+    if (front == nullptr) {
+        rear = nullptr;               // that was the last node, so rear must reset too
+    }
+
+    delete nodeToDelete;              // free the old front node
+    count--;
+    return removedRequest;
+}
+
+bool requestQueue::isEmpty() const {
+    return front == nullptr;
+}
