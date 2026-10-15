@@ -46,3 +46,63 @@ schedulingRequest requestQueue::dequeue() {
 bool requestQueue::isEmpty() const {
     return front == nullptr;
 }
+
+requestQueue::~requestQueue() {
+    node* current = front;
+
+    while (current != nullptr) {
+        node* nextNode = current->next;   // save the next node first
+        delete current;                   // free the current node
+        current = nextNode;               // move forward
+    }
+
+    front = nullptr;
+    rear = nullptr;
+    count = 0;
+}
+
+circularSlotQueue::circularSlotQueue() {
+    front = -1;
+    rear = -1;
+    count = 0;
+}
+
+bool circularSlotQueue::isFull() const {
+    return count == MAX_SLOTS;
+}
+
+bool circularSlotQueue::isEmpty() const {
+    return count == 0;
+}
+
+bool circularSlotQueue::enqueueSlot(timeSlot newSlot) {
+    if (isFull()) {
+        return false;                        // no space left
+    }
+
+    if (isEmpty()) {
+        front = 0;                           // first element goes at index 0
+    }
+
+    rear = (rear + 1) % MAX_SLOTS;           // wraparound
+    slots[rear] = newSlot;
+    count++;
+    return true;
+}
+
+timeSlot circularSlotQueue::dequeueSlot() {
+    if (isEmpty()) {
+        return timeSlot();                   // default slot, nothing to remove
+    }
+
+    timeSlot removedSlot = slots[front];
+    front = (front + 1) % MAX_SLOTS;         // wraparound
+    count--;
+
+    if (isEmpty()) {
+        front = -1;                          // reset so the next enqueue starts clean
+        rear = -1;
+    }
+
+    return removedSlot;
+}
