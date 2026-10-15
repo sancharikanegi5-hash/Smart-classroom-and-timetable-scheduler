@@ -5,25 +5,8 @@ Timetable::Timetable()
     rear = -1;
     queueSize = 0;
     top = -1;
-
-    for (int i = 0; i < DAYS; i++)
-    {
-        for (int j = 0; j < SLOTS; j++)
-        {
-            occupied[i][j] = false;
-        }
-    }
-}
-//priority queue
-Timetable::Timetable()
-{
-    front = 0;
-    rear = -1;
-    queueSize = 0;
-    top = -1;
-
+    //priority queue
     priorityQueueSize = 0;
-
     for (int i = 0; i < DAYS; i++)
     {
         for (int j = 0; j < SLOTS; j++)
@@ -32,6 +15,7 @@ Timetable::Timetable()
         }
     }
 }
+
 //request Q
 
 bool Timetable::enqueueRequest(SchedulingRequest request)
