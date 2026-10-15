@@ -17,7 +17,6 @@ Timetable::Timetable()
 }
 
 //request Q
-
 bool Timetable::enqueueRequest(SchedulingRequest request)
 {
     if (requestQueueFull())
@@ -154,4 +153,103 @@ bool Timetable::removeClass(int day, int slot)
 
     cout << "Class removed successfully\n";
     return true;
+    // Check if Priority Queue is empty
+bool Timetable::priorityQueueEmpty() const
+{
+    return priorityQueueSize == 0;
+}
+
+// to check if priority queue is full
+bool Timetable::priorityQueueFull() const
+{
+    return priorityQueueSize == MAX_REQUESTS;
+}
+// to insert request according to priority
+bool Timetable::enqueuePriorityRequest(SchedulingRequest request)
+{
+    if (priorityQueueFull())
+    {
+        cout << "Priority queue is full\n";
+        return false;
+    }
+    int i = priorityQueueSize;
+    priorityRequests[i] = request;
+    priorityQueueSize++;
+    // Heapify up
+    while (i > 0)
+    {
+        int parent = (i - 1) / 2;
+        if (priorityRequests[i].priority >
+            priorityRequests[parent].priority)
+        {
+            swap(priorityRequests[i], priorityRequests[parent]);
+            i = parent;
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    return true;
+}
+// Remove highest-priority request
+SchedulingRequest Timetable::dequeueHighestPriorityRequest()
+{
+    if (priorityQueueEmpty())
+    {
+        cout << "Priority queue is empty\n";
+        return SchedulingRequest();
+    }
+
+    SchedulingRequest highest = priorityRequests[0];
+    priorityRequests[0] = priorityRequests[priorityQueueSize - 1];
+    priorityQueueSize--;
+
+    // Heapify down
+    int i = 0;
+    while (true)
+    {
+        int left = 2 * i + 1;
+        int right = 2 * i + 2;
+        int largest = i;
+
+        if (left < priorityQueueSize &&
+            priorityRequests[left].priority >
+            priorityRequests[largest].priority)
+        {
+            largest = left;
+        }
+
+        if (right < priorityQueueSize &&
+            priorityRequests[right].priority >
+            priorityRequests[largest].priority)
+        {
+            largest = right;
+        }
+
+        if (largest == i)
+            break;
+
+        swap(priorityRequests[i], priorityRequests[largest]);
+        i = largest;
+    }
+    return highest;
+}
+// Display Priority Queue
+void Timetable::displayPriorityQueue() const
+{
+    if (priorityQueueEmpty())
+    {
+        cout << "Priority queue is empty\n";
+        return;
+    }
+
+    cout << "\nPriority Queue:\n";
+
+    for (int i = 0; i < priorityQueueSize; i++)
+    {
+        cout << "Subject: " << priorityRequests[i].subjectCode<< " | Name: "<< priorityRequests[i].subjectName<< " | Priority: "<< priorityRequests[i].priority<< endl;
+    }
+}
 }
