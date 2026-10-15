@@ -153,6 +153,7 @@ bool Timetable::removeClass(int day, int slot)
 
     cout << "Class removed successfully\n";
     return true;
+}
     // Check if Priority Queue is empty
 bool Timetable::priorityQueueEmpty() const
 {
@@ -252,4 +253,4 @@ void Timetable::displayPriorityQueue() const
         cout << "Subject: " << priorityRequests[i].subjectCode<< " | Name: "<< priorityRequests[i].subjectName<< " | Priority: "<< priorityRequests[i].priority<< endl;
     }
 }
-}
+
