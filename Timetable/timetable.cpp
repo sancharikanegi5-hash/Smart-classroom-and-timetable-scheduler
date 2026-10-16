@@ -286,22 +286,15 @@ double Timetable::calculateScore(
 {
     if (!validateCandidate(candidate))
         return -1.0;
-
-    double score = 0.0;
-    // Reward scheduled slots and priority
-    for (int day = 0; day < DAYS; day++)
-    {
-        for (int slot = 0; slot < SLOTS; slot++)
-        {
-            if (candidate.occupied[day][slot])
-            {
-                score += 10.0;
-                score +=
-                    candidate.timetable[day][slot].priority * 2.0;
-            }
-        }
-    }
-
+    PriorityStrategy priority;
+    GapStrategy gaps;
+    EvaluationStrategy* strategy = &priority;
+    double priorityScore = strategy->calculateScore(candidate);
+    strategy = &gaps;
+    double gapScore = strategy->calculateScore(candidate);
+    // Combine the two scoring strategies
+    return priorityScore + gapScore;
+}
     //  gaps between classes on each day
     for (int day = 0; day < DAYS; day++)
     {
