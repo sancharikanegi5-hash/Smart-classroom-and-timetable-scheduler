@@ -45,4 +45,34 @@ public:
             cout << code << " " << name << " " << credits << endl;
     }
 };
+#ifndef SUBJECTHASH_H
+#define SUBJECTHASH_H
 
+#include <string>
+using namespace std;
+
+const int TABLE_SIZE = 10;
+
+struct Subject {
+    string code;
+    string name;
+    Subject* next;
+};
+
+class SubjectHash {
+private:
+    Subject* table[TABLE_SIZE];
+
+    int hashFunction(string code);
+
+public:
+    SubjectHash();
+    ~SubjectHash();
+
+    void insertSubject(string code, string name);
+    void searchSubject(string code);
+    void deleteSubject(string code);
+    void displaySubjects();
+};
+
+#endif
