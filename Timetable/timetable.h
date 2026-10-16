@@ -48,6 +48,48 @@ struct UndoItem
         duration = dur;
     }
 };
+struct CandidateTimetable
+{
+    int id;
+    SchedulingRequest timetable[DAYS][SLOTS];
+    bool occupied[DAYS][SLOTS];
+    CandidateTimetable()
+    {
+        id = -1;
+        for (int i = 0; i < DAYS; i++)
+        {
+            for (int j = 0; j < SLOTS; j++)
+            {
+                occupied[i][j] = false;
+            }
+        }
+    }
+};
+// Base class for different timetable scoring methods
+class EvaluationStrategy
+{
+public:
+    virtual double calculateScore(
+        const CandidateTimetable& candidate) const = 0;
+
+    virtual ~EvaluationStrategy() {}
+};
+
+// Scores based on request priorities
+class PriorityStrategy : public EvaluationStrategy
+{
+public:
+    double calculateScore(
+        const CandidateTimetable& candidate) const override;
+};
+
+// Scores based on gaps between classes
+class GapStrategy : public EvaluationStrategy
+{
+public:
+    double calculateScore(
+        const CandidateTimetable& candidate) const override;
+};
     class Timetable
     {
     private:
