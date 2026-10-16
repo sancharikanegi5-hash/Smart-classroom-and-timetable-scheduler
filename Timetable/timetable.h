@@ -60,9 +60,10 @@ struct UndoItem
 
         SchedulingRequest timetable[DAYS][SLOTS];
         bool occupied[DAYS][SLOTS];
-    
-
-        public:
+     // Priority Queue using Max Heap
+    SchedulingRequest priorityRequests[MAX_REQUESTS];
+    int priorityQueueSize;
+    public:
 
     Timetable();
     // Request Queue
@@ -71,7 +72,12 @@ struct UndoItem
     bool requestQueueEmpty() const;
     bool requestQueueFull() const;
     void displayRequestQueue() const;
-
+  // Priority Queue
+    bool enqueuePriorityRequest(SchedulingRequest request);
+    SchedulingRequest dequeueHighestPriorityRequest();
+    bool priorityQueueEmpty() const;
+    bool priorityQueueFull() const;
+    void displayPriorityQueue() const;
     // Timetable operations
     bool addClass(int day, int slot, SchedulingRequest request);
     bool removeClass(int day, int slot);
