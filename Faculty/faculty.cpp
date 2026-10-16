@@ -69,3 +69,27 @@ void Faculty::displayFaculty() const {
     }
     cout << endl;
 }
+bool Faculty::checkAvailability(const string& slot) const {
+    for (const string& s : availableSlots) {
+        if (s == slot) {
+            return true;
+        }
+    }
+    return false;
+}
+
+FullTimeFaculty::FullTimeFaculty(int id, string name, string department, string email)
+    : Faculty(id, name, department, email) {
+}
+
+bool FullTimeFaculty::checkAvailability(const string& slot) const {
+    return Faculty::checkAvailability(slot);
+}
+
+VisitingFaculty::VisitingFaculty(int id, string name, string department, string email)
+    : Faculty(id, name, department, email) {
+}
+
+bool VisitingFaculty::checkAvailability(const string& slot) const {
+    return Faculty::checkAvailability(slot);
+}
