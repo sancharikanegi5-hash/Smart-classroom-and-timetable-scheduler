@@ -253,4 +253,107 @@ void Timetable::displayPriorityQueue() const
         cout << "Subject: " << priorityRequests[i].subjectCode<< " | Name: "<< priorityRequests[i].subjectName<< " | Priority: "<< priorityRequests[i].priority<< endl;
     }
 }
+// Validate candidate timetable
+bool Timetable::validateCandidate(
+    const CandidateTimetable& candidate) const
+{
+    for (int day = 0; day < DAYS; day++)
+    {
+        for (int slot = 0; slot < SLOTS; slot++)
+        {
+            if (!candidate.occupied[day][slot])
+                continue;
+            const SchedulingRequest& request = candidate.timetable[day][slot];
+            if (request.duration <= 0 ||   request.duration > SLOTS ||  slot + request.duration > SLOTS)
+            {
+                return false;
+            }
+            // Verify all slots required by this class are occupied
+            for (int i = slot; i < slot + request.duration; i++)
+            {
+                if (!candidate.occupied[day][i])
+                    return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+// Calculate timetable score
+double Timetable::calculateScore(
+    const CandidateTimetable& candidate) const
+{
+    if (!validateCandidate(candidate))
+        return -1.0;
+
+    double score = 0.0;
+    // Reward scheduled slots and priority
+    for (int day = 0; day < DAYS; day++)
+    {
+        for (int slot = 0; slot < SLOTS; slot++)
+        {
+            if (candidate.occupied[day][slot])
+            {
+                score += 10.0;
+                score +=
+                    candidate.timetable[day][slot].priority * 2.0;
+            }
+        }
+    }
+
+    //  gaps between classes on each day
+    for (int day = 0; day < DAYS; day++)
+    {
+        int first = -1;
+        int last = -1;
+
+        for (int slot = 0; slot < SLOTS; slot++)
+        {
+            if (candidate.occupied[day][slot])
+            {
+                if (first == -1)
+                    first = slot;
+
+                last = slot;
+            }
+        }
+
+        if (first != -1)
+        {
+            for (int slot = first; slot <= last; slot++)
+            {
+                if (!candidate.occupied[day][slot])
+                    score -= 3.0;
+            }
+        }
+    }
+
+    return score;
+}
+// Select the highest scoring valid candidate
+int Timetable::selectBestCandidate(
+    const CandidateTimetable candidates[],
+    int count) const
+{
+    if (count <= 0)
+        return -1;
+    int bestIndex = -1;
+    double bestScore = 0.0;
+
+    for (int i = 0; i < count; i++)
+    {
+        if (!validateCandidate(candidates[i]))
+            continue;
+
+        double score = calculateScore(candidates[i]);
+
+        if (bestIndex == -1 || score > bestScore)
+        {
+            bestScore = score;
+            bestIndex = i;
+        }
+    }
+    return bestIndex;
+}
 
