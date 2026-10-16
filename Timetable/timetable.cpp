@@ -295,7 +295,32 @@ double Timetable::calculateScore(
     // Combine the two scoring strategies
     return priorityScore + gapScore;
 }
-    //  gaps between classes on each day
+
+// Score based on request priority
+double PriorityStrategy::calculateScore(
+    const CandidateTimetable& candidate) const
+{
+    double score = 0.0;
+
+    for (int day = 0; day < DAYS; day++)
+    {
+        for (int slot = 0; slot < SLOTS; slot++)
+        {
+            if (candidate.occupied[day][slot])
+            {
+                score +=
+                    candidate.timetable[day][slot].priority * 2.0;
+            }
+        }
+    }
+
+    return score;
+}
+// Score based on gaps between classes
+double GapStrategy::calculateScore(
+    const CandidateTimetable& candidate) const
+{
+    double score = 0.0;
     for (int day = 0; day < DAYS; day++)
     {
         int first = -1;
@@ -311,7 +336,6 @@ double Timetable::calculateScore(
                 last = slot;
             }
         }
-
         if (first != -1)
         {
             for (int slot = first; slot <= last; slot++)
@@ -321,32 +345,5 @@ double Timetable::calculateScore(
             }
         }
     }
-
     return score;
 }
-// Select the highest scoring valid candidate
-int Timetable::selectBestCandidate(
-    const CandidateTimetable candidates[],
-    int count) const
-{
-    if (count <= 0)
-        return -1;
-    int bestIndex = -1;
-    double bestScore = 0.0;
-
-    for (int i = 0; i < count; i++)
-    {
-        if (!validateCandidate(candidates[i]))
-            continue;
-
-        double score = calculateScore(candidates[i]);
-
-        if (bestIndex == -1 || score > bestScore)
-        {
-            bestScore = score;
-            bestIndex = i;
-        }
-    }
-    return bestIndex;
-}
-
