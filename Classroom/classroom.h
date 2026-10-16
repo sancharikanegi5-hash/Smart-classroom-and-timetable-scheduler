@@ -7,9 +7,7 @@
 
 using namespace std;
 
-// =======================================
-// PHASE 1: EQUIPMENT CLASS
-// =======================================
+// EQUIPMENT CLASS
 
 class Equipment
 {
@@ -17,15 +15,17 @@ private:
     string name;
 
 public:
-    Equipment(string name);
+    Equipment(string n){
+        name=n;
+    }
 
-    string getName() const;
+    string getName(){
+        return name;
+    }
 };
 
 
-// =======================================
-// PHASE 1: CLASSROOM BASE CLASS
-// =======================================
+// CLASSROOM BASE CLASS
 
 class Classroom
 {
@@ -36,29 +36,51 @@ protected:
 
 public:
     // Constructor
-    Classroom(string id, int capacity,
-              const vector<Equipment>& equipment = {});
+    Classroom(string i, int c, vector<Equipment> e = {})
+    {
+        id = i;
+        capacity = c;
+        equipmentList = e;
+    }
 
     // Getters
-    string getId() const;
-    int getCapacity() const;
+    string getId()
+    {
+        return id;
+    }
 
-    // Phase 2: virtual functions
-    virtual string getType() const;
-    virtual int getSetupTime() const;
+    int getCapacity()
+    {
+        return capacity;
+    }
 
-    // Display room information
-    virtual void display() const;
+    // Virtual functions
+    virtual string getType()
+    {
+        return "Classroom";
+    }
 
-    // Destructor
-    virtual ~Classroom();
+    virtual int getSetupTime()
+    {
+        return 0;
+    }
+
+    virtual void display()
+    {
+        cout << "Classroom ID: " << id << endl;
+        cout << "Capacity: " << capacity << endl;
+    }
+
+    // Virtual destructor
+    virtual ~Classroom()
+    {
+    }
 };
 
 
-// =======================================
 // PHASE 2: SMART CLASSROOM
 // Inherits from Classroom
-// =======================================
+
 
 class SmartClassroom : public Classroom
 {
