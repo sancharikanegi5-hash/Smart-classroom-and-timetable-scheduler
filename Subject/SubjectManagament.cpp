@@ -57,8 +57,6 @@ void SubjectHash::insertSubject(string code, string name) {
     int index = hashFunction(code);
 
     Subject* temp = table[index];
-
-    // Avoid duplicate subject codes
     while (temp != nullptr) {
         if (temp->code == code) {
             temp->name = name;
