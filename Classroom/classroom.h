@@ -143,6 +143,3 @@ public:
     RoomManager(const RoomManager&) = delete;
     RoomManager& operator=(const RoomManager&) = delete;
 };
-
-#endif
-
