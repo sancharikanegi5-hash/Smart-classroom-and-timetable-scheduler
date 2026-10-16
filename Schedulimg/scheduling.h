@@ -1,5 +1,5 @@
 #ifndef TIMESLOT_REQUEST_H
-#define TIMESLOT_REQUEST_H 
+#define TIMESLOT_REQUEST_H
 #include<string>
 
 using namespace std;
@@ -23,12 +23,14 @@ class schedulingRequest{
     string section;
     timeSlot slot;
     bool valid;
+    int priority;                 // higher number = higher priority
 
     public:
     schedulingRequest();
-    schedulingRequest(string subj,string sec,timeSlot ts);
+    schedulingRequest(string subj,string sec,timeSlot ts,int pri=1);
     bool isValid();
     void process();
+    int getPriority() const;
     void display() const;
 };
 
@@ -63,6 +65,25 @@ class circularSlotQueue{
     timeSlot dequeueSlot();
     bool isFull() const;
     bool isEmpty() const;
+};
+
+const int MAX_HEAP_SIZE=100;
+
+// max-heap: the request with the highest priority number sits at index 0
+class requestHeap{
+    schedulingRequest heapArray[MAX_HEAP_SIZE];
+    int heapSize;
+
+    void heapifyUp(int index);
+    void heapifyDown(int index);
+    void swapRequests(int firstIndex,int secondIndex);
+
+    public:
+    requestHeap();
+    bool insert(schedulingRequest newRequest);
+    schedulingRequest extractMax();
+    bool isEmpty() const;
+    bool isFull() const;
 };
 
 #endif
