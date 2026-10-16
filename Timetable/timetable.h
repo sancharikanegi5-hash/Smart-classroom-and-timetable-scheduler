@@ -94,6 +94,10 @@ struct UndoItem
     // Display
     void display() const;
     void displayDay(int day) const;
+ // Candidate timetable evaluation
+    bool validateCandidate(const CandidateTimetable& candidate) const;
+   double calculateScore(const CandidateTimetable& candidate) const;
+   int selectBestCandidate(const CandidateTimetable candidates[], int count) const;
 
     ~Timetable();
 };
