@@ -1,7 +1,3 @@
-
-#ifndef CLASSROOM_H
-#define CLASSROOM_H
-
 #include <iostream>
 #include <string>
 #include <vector>
