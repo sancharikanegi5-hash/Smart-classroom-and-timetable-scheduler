@@ -1,60 +1,60 @@
 
 #include "classroom.h"
 
-// =======================================
+//------------------------------
 // EQUIPMENT DEFINITIONS
-// =======================================
 
-Equipment::Equipment(string name)
+Equipment::Equipment(string n)
 {
-    this->name = name;
+    name = n;
 }
-
-string Equipment::getName() const
+string Equipment::getName() 
 {
     return name;
 }
 
-
-// =======================================
+//----------------------------------
 // CLASSROOM DEFINITIONS
-// =======================================
 
-Classroom::Classroom(string id, int capacity,
-                     const vector<Equipment>& equipment)
+// Constructor
+Classroom::Classroom(string i, int c, vector<Equipment> e)
 {
-    this->id = id;
-    this->capacity = capacity;
-    equipmentList = equipment;
+    id = i;
+    capacity = c;
+    equipmentList = e;
 }
 
-string Classroom::getId() const
-{
-    return id;
-}
-
-int Classroom::getCapacity() const
-{
-    return capacity;
-}
-
-string Classroom::getType() const
+// Return classroom type
+string Classroom::getType()
 {
     return "Classroom";
 }
 
-int Classroom::getSetupTime() const
+// Return setup time
+int Classroom::getSetupTime()
 {
     return 5;
 }
 
-void Classroom::display() const
+// Return classroom ID
+string Classroom::getId()
+{
+    return id;
+}
+
+// Return capacity
+int Classroom::getCapacity()
+{
+    return capacity;
+}
+
+// Display classroom details
+void Classroom::display()
 {
     cout << "\nRoom ID: " << id;
     cout << "\nType: " << getType();
     cout << "\nCapacity: " << capacity;
-    cout << "\nSetup Time: " << getSetupTime()
-         << " minutes";
+    cout << "\nSetup Time: " << getSetupTime() << " minutes";
 
     cout << "\nEquipment: ";
 
@@ -62,211 +62,187 @@ void Classroom::display() const
     {
         cout << "None";
     }
-
-    for (int i = 0; i < equipmentList.size(); i++)
+    else
     {
-        cout << equipmentList[i].getName();
-
-        if (i != equipmentList.size() - 1)
+        for (int i = 0; i < equipmentList.size(); i++)
         {
-            cout << ", ";
+            cout << equipmentList[i].getName();
+
+            if (i < equipmentList.size() - 1)
+            {
+                cout << ", ";
+            }
         }
     }
 
     cout << endl;
 }
 
+// Destructor
 Classroom::~Classroom()
 {
-    // Equipment vector cleans itself automatically
 }
 
-
-// =======================================
+//-------------------------------------
 // SMART CLASSROOM DEFINITIONS
-// =======================================
 
-SmartClassroom::SmartClassroom(
-    string id, int capacity,
-    const vector<Equipment>& equipment,
-    bool projector)
-    : Classroom(id, capacity, equipment)
+// Constructor
+SmartClassroom::SmartClassroom(string i, int c,vector<Equipment> e, bool p): Classroom(i, c, e)
 {
-    this->projector = projector;
+    projector = p;
 }
 
-string SmartClassroom::getType() const
+// Return classroom type
+string SmartClassroom::getType()
 {
     return "Smart Classroom";
 }
 
-int SmartClassroom::getSetupTime() const
+// Return setup time
+int SmartClassroom::getSetupTime()
 {
     return 5;
 }
 
-void SmartClassroom::display() const
+// Display details
+void SmartClassroom::display()
 {
     Classroom::display();
 
-    cout << "Projector: ";
+    cout << "\nProjector: ";
 
     if (projector)
-        cout << "Yes\n";
+        cout << "Yes";
     else
-        cout << "No\n";
+        cout << "No";
+
+    cout << endl;
 }
 
+// Destructor
 SmartClassroom::~SmartClassroom()
 {
-    // Base class destructor runs automatically
 }
-
-
-// =======================================
+   
+//------------------------
 // LABORATORY DEFINITIONS
-// =======================================
 
-Laboratory::Laboratory(
-    string id, int capacity,
-    const vector<Equipment>& equipment,
-    int computers)
-    : Classroom(id, capacity, equipment)
+// Constructor
+Laboratory::Laboratory(string i, int c, vector<Equipment> e, int comp): Classroom(i, c, e)
 {
-    this->computers = computers;
+    computers = comp;
 }
 
-string Laboratory::getType() const
+// Return type
+string Laboratory::getType()
 {
     return "Laboratory";
 }
 
-int Laboratory::getSetupTime() const
+// Return setup time
+int Laboratory::getSetupTime()
 {
     return 15;
 }
 
-void Laboratory::display() const
+// Display details
+void Laboratory::display()
 {
     Classroom::display();
-
-    cout << "Number of computers: "
-         << computers << endl;
+    cout << "Number of computers: " << computers << endl;
 }
 
+// Destructor
 Laboratory::~Laboratory()
 {
-    // Base class destructor runs automatically
 }
 
 
-// =======================================
+// ------------------------------
 // ROOM MANAGER DEFINITIONS
-// =======================================
 
-// Add room to linked list, hash table and heap
-
+// Add room
 void RoomManager::addRoom(Classroom* room)
 {
     if (room == nullptr)
     {
-        cout << "Invalid room.\n";
+        cout << "Invalid room\n";
         return;
     }
 
-    string roomId = room->getId();
+    string id = room->getId();
 
-    // Check duplicate ID
-    if (roomHash.find(roomId) != roomHash.end())
+    if (roomHash.find(id) != roomHash.end())
     {
-        cout << "Room ID already exists.\n";
+        cout << "Room already exists\n";
         delete room;
         return;
     }
 
-    // Phase 1: Linked list insertion
     roomList.push_back(room);
+    roomHash[id] = room;
 
-    // Phase 2: Hash table insertion
-    roomHash[roomId] = room;
+    roomHeap.push({room->getCapacity(), id});
 
-    // Phase 2: Heap insertion
-    roomHeap.push(
-        make_pair(room->getCapacity(), roomId)
-    );
-
-    cout << "Room added successfully.\n";
+    cout << "Room added successfully\n";
 }
 
 
 // Remove room
-
 void RoomManager::removeRoom(string id)
 {
-    auto it = roomHash.find(id);
-
-    if (it == roomHash.end())
+    if (roomHash.find(id) == roomHash.end())
     {
-        cout << "Room not found.\n";
+        cout << "Room not found\n";
         return;
     }
 
-    Classroom* room = it->second;
+    Classroom* room = roomHash[id];
 
-    // Remove from linked list
     roomList.remove(room);
+    roomHash.erase(id);
 
-    // Remove from hash table
-    roomHash.erase(it);
-
-    // Delete the room object
     delete room;
 
-    // Rebuild heap
     rebuildHeap();
 
-    cout << "Room removed successfully.\n";
+    cout << "Room removed successfully\n";
 }
 
 
-// Search by ID using hash table
-
-void RoomManager::searchRoomByID(string id) const
+// Search room by ID
+void RoomManager::searchRoomByID(string id) 
 {
-    auto it = roomHash.find(id);
-
-    if (it == roomHash.end())
+    if (roomHash.find(id) == roomHash.end())
     {
-        cout << "Room not found.\n";
+        cout << "Room not found\n";
         return;
     }
 
-    cout << "Room found:\n";
-    it->second->display();
+    Classroom* room = roomHash[id];
+    room->display();
 }
 
 
-// Search by capacity using linked list
-
-void RoomManager::searchRoomByCapacity(
-    int requiredCapacity) const
+// Search room by capacity
+void RoomManager::searchRoomByCapacity(int capacity) 
 {
-    for (Classroom* room : roomList)
-    {
-        if (room->getCapacity() >= requiredCapacity)
-        {
-            cout << "Suitable room found:\n";
-            room->display();
-            return;
-        }
-    }
+    for (auto it = roomList.begin(); it != roomList.end(); it++)
+{
+    Classroom* room = *it;
 
-    cout << "No suitable room found.\n";
+    if (room->getCapacity() >= capacity)
+    {
+        room->display();
+        return;
+    }
+}
+
+    cout << "No suitable room found\n";
 }
 
 
-// Rebuild heap after room deletion
-
+// Rebuild heap
 void RoomManager::rebuildHeap()
 {
     while (!roomHeap.empty())
@@ -274,64 +250,49 @@ void RoomManager::rebuildHeap()
         roomHeap.pop();
     }
 
-    for (auto it = roomHash.begin();
-         it != roomHash.end(); it++)
+    for (Classroom* room : roomList)
     {
-        Classroom* room = it->second;
-
-        roomHeap.push(
-            make_pair(room->getCapacity(),
-                      room->getId())
-        );
+        roomHeap.push({room->getCapacity(), room->getId()});
     }
 }
 
 
 // Show highest capacity room
-
-void RoomManager::showHighestCapacityRoom() const
+void RoomManager::showHighestCapacityRoom() 
 {
     if (roomHeap.empty())
     {
-        cout << "No rooms available.\n";
+        cout << "No rooms available\n";
         return;
     }
 
-    string id = roomHeap.top().second;
-
-    searchRoomByID(id);
+    searchRoomByID(roomHeap.top().second);
 }
 
 
 // Display all rooms
-
-void RoomManager::displayAllRooms() const
+void RoomManager::displayAllRooms()
 {
     if (roomList.empty())
     {
-        cout << "No rooms available.\n";
+        cout << "No rooms available\n";
         return;
     }
 
-    for (Classroom* room : roomList)
+    for (auto it = roomList.begin(); it != roomList.end(); it++)
     {
+        Classroom* room = *it;
         room->display();
-
         cout << "-------------------\n";
     }
 }
 
 
-// RoomManager destructor
-
+// Destructor
 RoomManager::~RoomManager()
 {
     for (Classroom* room : roomList)
     {
         delete room;
     }
-
-    roomList.clear();
-    roomHash.clear();
 }
-
