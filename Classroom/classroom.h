@@ -13,7 +13,6 @@ class Equipment
 {
 private:
     string name;
-
 public:
     Equipment(string n){
         name=n;
@@ -23,7 +22,6 @@ public:
         return name;
     }
 };
-
 
 // CLASSROOM BASE CLASS
 
@@ -86,82 +84,110 @@ class SmartClassroom : public Classroom
 {
 private:
     bool projector;
-
 public:
-    SmartClassroom(string id, int capacity,
-                   const vector<Equipment>& equipment,
-                   bool projector);
+    SmartClassroom(string i, int c, vector<Equipment> e, bool p) : Classroom(i, c, e)
+    {
+        projector = p;
+    }
+    string getType() override
+    {
+        return "Smart Classroom";
+    }
+    int getSetupTime() override
+    {
+        return 10;
+    }
+    void display() override
+    {
+        Classroom::display();
 
-    string getType() const override;
-    int getSetupTime() const override;
-    void display() const override;
+        cout << "Projector: ";
+        if (projector)
+            cout << "Available" << endl;
+        else
+            cout << "Not Available" << endl;
+    }
 
-    ~SmartClassroom() override;
+    ~SmartClassroom() override
+    {
+    }
 };
 
 
-// =======================================
 // PHASE 2: LABORATORY
 // Inherits from Classroom
-// =======================================
 
 class Laboratory : public Classroom
 {
 private:
     int computers;
-
 public:
-    Laboratory(string id, int capacity,
-               const vector<Equipment>& equipment,
-               int computers);
-
-    string getType() const override;
-    int getSetupTime() const override;
-    void display() const override;
-
-    ~Laboratory() override;
+    Laboratory(string i, int c, vector<Equipment> e, int comp) : Classroom(i, c, e)
+    {
+        computers = comp;
+    }
+    string getType() override
+    {
+        return "Laboratory";
+    }
+    int getSetupTime() override
+    {
+        return 20;
+    }
+    void display() override
+    {
+        Classroom::display();
+        cout << "Computers: " << computers << endl;
+    }
+    ~Laboratory() override
+    {
+    }
 };
 
-
-// =======================================
 // ROOM MANAGER
 // Manages all classrooms and laboratories
-// =======================================
 
 class RoomManager
 {
 private:
-    // Phase 1: Linked list
     list<Classroom*> roomList;
-
-    // Phase 2: Hash table
     unordered_map<string, Classroom*> roomHash;
-
-    // Phase 2: Max heap
     priority_queue<pair<int, string>> roomHeap;
 
-    // Rebuild heap after deleting a room
-    void rebuildHeap();
+    void rebuildHeap()
+    {
+    }
 
 public:
     // Add and remove rooms
-    void addRoom(Classroom* room);
-    void removeRoom(string id);
+    void addRoom(Classroom* room)
+    {
+    }
 
-    // Searching
-    void searchRoomByID(string id) const;
-    void searchRoomByCapacity(int requiredCapacity) const;
+    void removeRoom(string id)
+    {
+    }
 
-    // Heap operation
-    void showHighestCapacityRoom() const;
+    // Search rooms
+    void searchRoomByID(string id)
+    {
+    }
+
+    void searchRoomByCapacity(int capacity)
+    {
+    }
+
+    void showHighestCapacityRoom()
+    {
+    }
 
     // Display all rooms
-    void displayAllRooms() const;
+    void displayAllRooms()
+    {
+    }
 
     // Destructor
-    ~RoomManager();
-
-    // Avoid accidental copying of the manager
-    RoomManager(const RoomManager&) = delete;
-    RoomManager& operator=(const RoomManager&) = delete;
+    ~RoomManager()
+    {
+    }
 };
