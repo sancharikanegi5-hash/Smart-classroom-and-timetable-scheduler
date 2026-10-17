@@ -1,4 +1,4 @@
-#include "Subject.h"
+#include "SubjectManagement.h"
 
 Subject::Subject() {
     code = "";
@@ -32,10 +32,6 @@ void Subject::displaySubject(int minCredits) {
     if (credits >= minCredits)
         cout << code << " " << name << " " << credits << endl;
 }
-#include "SubjectHash.h"
-#include <iostream>
-using namespace std;
-
 SubjectHash::SubjectHash() {
     for (int i = 0; i < TABLE_SIZE; i++) {
         table[i] = nullptr;
@@ -56,7 +52,7 @@ int SubjectHash::hashFunction(string code) {
 void SubjectHash::insertSubject(string code, string name) {
     int index = hashFunction(code);
 
-    Subject* temp = table[index];
+    SubjectEntry* temp = table[index];
     while (temp != nullptr) {
         if (temp->code == code) {
             temp->name = name;
@@ -66,7 +62,7 @@ void SubjectHash::insertSubject(string code, string name) {
         temp = temp->next;
     }
 
-    Subject* newSubject = new Subject;
+    SubjectEntry* newSubject = new SubjectEntry;
     newSubject->code = code;
     newSubject->name = name;
     newSubject->next = table[index];
@@ -78,7 +74,7 @@ void SubjectHash::insertSubject(string code, string name) {
 
 void SubjectHash::searchSubject(string code) {
     int index = hashFunction(code);
-    Subject* temp = table[index];
+    SubjectEntry* temp = table[index];
 
     while (temp != nullptr) {
         if (temp->code == code) {
@@ -95,8 +91,8 @@ void SubjectHash::searchSubject(string code) {
 
 void SubjectHash::deleteSubject(string code) {
     int index = hashFunction(code);
-    Subject* temp = table[index];
-    Subject* prev = nullptr;
+    SubjectEntry* temp = table[index];
+    SubjectEntry* prev = nullptr;
 
     while (temp != nullptr) {
         if (temp->code == code) {
@@ -121,7 +117,7 @@ void SubjectHash::displaySubjects() {
     for (int i = 0; i < TABLE_SIZE; i++) {
         cout << "Index " << i << ": ";
 
-        Subject* temp = table[i];
+        SubjectEntry* temp = table[i];
 
         while (temp != nullptr) {
             cout << "[" << temp->code << ", "
@@ -136,10 +132,10 @@ void SubjectHash::displaySubjects() {
 
 SubjectHash::~SubjectHash() {
     for (int i = 0; i < TABLE_SIZE; i++) {
-        Subject* temp = table[i];
+        SubjectEntry* temp = table[i];
 
         while (temp != nullptr) {
-            Subject* del = temp;
+            SubjectEntry* del = temp;
             temp = temp->next;
             delete del;
         }

@@ -12,38 +12,13 @@ private:
     int credits;
 
 public:
-    Subject() {
-        code = "";
-        name = "";
-        credits = 0;
-    }
-
-    Subject(string c, string n, int cr) {
-        code = c;
-        name = n;
-        credits = cr;
-    }
-
-    string getCode() {
-        return code;
-    }
-
-    string getName() {
-        return name;
-    }
-
-    int getCredits() {
-        return credits;
-    }
-
-    void displaySubject() {
-        cout << code << " " << name << " " << credits << endl;
-    }
-
-    void displaySubject(int minCredits) {
-        if (credits >= minCredits)
-            cout << code << " " << name << " " << credits << endl;
-    }
+    Subject();
+    Subject(string c, string n, int cr);
+    string getCode();
+    string getName();
+    int getCredits();
+    void displaySubject();
+    void displaySubject(int minCredits);
 };
 #ifndef SUBJECTHASH_H
 #define SUBJECTHASH_H
@@ -53,15 +28,15 @@ using namespace std;
 
 const int TABLE_SIZE = 10;
 
-struct Subject {
+struct SubjectEntry {
     string code;
     string name;
-    Subject* next;
+    SubjectEntry* next;
 };
 
 class SubjectHash {
 private:
-    Subject* table[TABLE_SIZE];
+    SubjectEntry* table[TABLE_SIZE];
 
     int hashFunction(string code);
 
@@ -75,4 +50,5 @@ public:
     void displaySubjects();
 };
 
+#endif
 #endif

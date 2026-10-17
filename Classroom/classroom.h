@@ -1,193 +1,75 @@
+#ifndef CLASSROOM_H
+#define CLASSROOM_H
+
 #include <iostream>
-#include <string>
-#include <vector>
 #include <list>
-#include <unordered_map>
 #include <queue>
+#include <string>
+#include <unordered_map>
+#include <vector>
 
-using namespace std;
-
-// EQUIPMENT CLASS
-
-class Equipment
-{
+class Equipment {
 private:
-    string name;
+    std::string name;
 public:
-    Equipment(string n){
-        name=n;
-    }
-
-    string getName(){
-        return name;
-    }
+    explicit Equipment(std::string name);
+    std::string getName();
 };
 
-// CLASSROOM BASE CLASS
-
-class Classroom
-{
+class Classroom {
 protected:
-    string id;
+    std::string id;
     int capacity;
-    vector<Equipment> equipmentList;
-
+    std::vector<Equipment> equipmentList;
 public:
-    // Constructor
-    Classroom(string i, int c, vector<Equipment> e = {})
-    {
-        id = i;
-        capacity = c;
-        equipmentList = e;
-    }
-
-    // Getters
-    string getId()
-    {
-        return id;
-    }
-
-    int getCapacity()
-    {
-        return capacity;
-    }
-
-    // Virtual functions
-    virtual string getType()
-    {
-        return "Classroom";
-    }
-
-    virtual int getSetupTime()
-    {
-        return 0;
-    }
-
-    virtual void display()
-    {
-        cout << "Classroom ID: " << id << endl;
-        cout << "Capacity: " << capacity << endl;
-    }
-
-    // Virtual destructor
-    virtual ~Classroom()
-    {
-    }
+    Classroom(std::string id, int capacity, std::vector<Equipment> equipment = {});
+    virtual ~Classroom();
+    std::string getId();
+    int getCapacity();
+    virtual std::string getType();
+    virtual int getSetupTime();
+    virtual void display();
 };
 
-
-// PHASE 2: SMART CLASSROOM
-// Inherits from Classroom
-
-
-class SmartClassroom : public Classroom
-{
+class SmartClassroom : public Classroom {
 private:
     bool projector;
 public:
-    SmartClassroom(string i, int c, vector<Equipment> e, bool p) : Classroom(i, c, e)
-    {
-        projector = p;
-    }
-    string getType() override
-    {
-        return "Smart Classroom";
-    }
-    int getSetupTime() override
-    {
-        return 10;
-    }
-    void display() override
-    {
-        Classroom::display();
-
-        cout << "Projector: ";
-        if (projector)
-            cout << "Available" << endl;
-        else
-            cout << "Not Available" << endl;
-    }
-
-    ~SmartClassroom() override
-    {
-    }
+    SmartClassroom(std::string id, int capacity, std::vector<Equipment> equipment, bool projector);
+    ~SmartClassroom() override;
+    std::string getType() override;
+    int getSetupTime() override;
+    void display() override;
 };
 
-
-// PHASE 2: LABORATORY
-// Inherits from Classroom
-
-class Laboratory : public Classroom
-{
+class Laboratory : public Classroom {
 private:
     int computers;
 public:
-    Laboratory(string i, int c, vector<Equipment> e, int comp) : Classroom(i, c, e)
-    {
-        computers = comp;
-    }
-    string getType() override
-    {
-        return "Laboratory";
-    }
-    int getSetupTime() override
-    {
-        return 20;
-    }
-    void display() override
-    {
-        Classroom::display();
-        cout << "Computers: " << computers << endl;
-    }
-    ~Laboratory() override
-    {
-    }
+    Laboratory(std::string id, int capacity, std::vector<Equipment> equipment, int computers);
+    ~Laboratory() override;
+    std::string getType() override;
+    int getSetupTime() override;
+    void display() override;
 };
 
-// ROOM MANAGER
-// Manages all classrooms and laboratories
-
-class RoomManager
-{
+class RoomManager {
 private:
-    list<Classroom*> roomList;
-    unordered_map<string, Classroom*> roomHash;
-    priority_queue<pair<int, string>> roomHeap;
-
-    void rebuildHeap()
-    {
-    }
-
+    std::list<Classroom*> roomList;
+    std::unordered_map<std::string, Classroom*> roomHash;
+    std::priority_queue<std::pair<int, std::string>> roomHeap;
+    void rebuildHeap();
 public:
-    // Add and remove rooms
-    void addRoom(Classroom* room)
-    {
-    }
-
-    void removeRoom(string id)
-    {
-    }
-
-    // Search rooms
-    void searchRoomByID(string id)
-    {
-    }
-
-    void searchRoomByCapacity(int capacity)
-    {
-    }
-
-    void showHighestCapacityRoom()
-    {
-    }
-
-    // Display all rooms
-    void displayAllRooms()
-    {
-    }
-
-    // Destructor
-    ~RoomManager()
-    {
-    }
+    RoomManager() = default;
+    RoomManager(const RoomManager&) = delete;
+    RoomManager& operator=(const RoomManager&) = delete;
+    void addRoom(Classroom* room);
+    void removeRoom(std::string id);
+    void searchRoomByID(std::string id);
+    void searchRoomByCapacity(int capacity);
+    void showHighestCapacityRoom();
+    void displayAllRooms();
+    ~RoomManager();
 };
+
+#endif
