@@ -253,4 +253,97 @@ void Timetable::displayPriorityQueue() const
         cout << "Subject: " << priorityRequests[i].subjectCode<< " | Name: "<< priorityRequests[i].subjectName<< " | Priority: "<< priorityRequests[i].priority<< endl;
     }
 }
+// Validate candidate timetable
+bool Timetable::validateCandidate(
+    const CandidateTimetable& candidate) const
+{
+    for (int day = 0; day < DAYS; day++)
+    {
+        for (int slot = 0; slot < SLOTS; slot++)
+        {
+            if (!candidate.occupied[day][slot])
+                continue;
+            const SchedulingRequest& request = candidate.timetable[day][slot];
+            if (request.duration <= 0 ||   request.duration > SLOTS ||  slot + request.duration > SLOTS)
+            {
+                return false;
+            }
+            // Verify all slots required by this class are occupied
+            for (int i = slot; i < slot + request.duration; i++)
+            {
+                if (!candidate.occupied[day][i])
+                    return false;
+            }
+        }
+    }
 
+    return true;
+}
+
+// Calculate timetable score
+double Timetable::calculateScore(
+    const CandidateTimetable& candidate) const
+{
+    if (!validateCandidate(candidate))
+        return -1.0;
+    PriorityStrategy priority;
+    GapStrategy gaps;
+    EvaluationStrategy* strategy = &priority;
+    double priorityScore = strategy->calculateScore(candidate);
+    strategy = &gaps;
+    double gapScore = strategy->calculateScore(candidate);
+    // Combine the two scoring strategies
+    return priorityScore + gapScore;
+}
+
+// Score based on request priority
+double PriorityStrategy::calculateScore(
+    const CandidateTimetable& candidate) const
+{
+    double score = 0.0;
+
+    for (int day = 0; day < DAYS; day++)
+    {
+        for (int slot = 0; slot < SLOTS; slot++)
+        {
+            if (candidate.occupied[day][slot])
+            {
+                score +=
+                    candidate.timetable[day][slot].priority * 2.0;
+            }
+        }
+    }
+
+    return score;
+}
+// Score based on gaps between classes
+double GapStrategy::calculateScore(
+    const CandidateTimetable& candidate) const
+{
+    double score = 0.0;
+    for (int day = 0; day < DAYS; day++)
+    {
+        int first = -1;
+        int last = -1;
+
+        for (int slot = 0; slot < SLOTS; slot++)
+        {
+            if (candidate.occupied[day][slot])
+            {
+                if (first == -1)
+                    first = slot;
+
+                last = slot;
+            }
+        }
+        if (first != -1)
+        {
+            for (int slot = first; slot <= last; slot++)
+            {
+                if (!candidate.occupied[day][slot])
+                    score -= 3.0;
+            }
+        }
+    }
+    return score;
+}
