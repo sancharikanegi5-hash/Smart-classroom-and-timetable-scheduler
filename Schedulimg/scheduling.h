@@ -6,6 +6,10 @@ using namespace std;
 
 enum Day { MON,TUE,WED,THU,FRI,SAT};
 
+const int MAX_SLOTS=6;           // periods per day (period numbers run 1..MAX_SLOTS)
+const int PLACEMENT_DAYS=6;      // MON..SAT
+const int MAX_HEAP_SIZE=100;
+
 class timeSlot{
     Day day;
     int period;
@@ -18,6 +22,8 @@ class timeSlot{
     void display() const;
 };
 
+// A plain schedulingRequest behaves like a lecture (1 period).
+// labRequest (below) overrides the virtual functions for 2 consecutive periods.
 class schedulingRequest{
     string subject;
     string section;
@@ -28,10 +34,24 @@ class schedulingRequest{
     public:
     schedulingRequest();
     schedulingRequest(string subj,string sec,timeSlot ts,int pri=1);
+    virtual ~schedulingRequest();
     bool isValid();
     void process();
     int getPriority() const;
+    timeSlot getSlot() const;
+    void setSlot(timeSlot newSlot);
     void display() const;
+
+    // polymorphic part (Phase 2)
+    virtual int getPeriodsNeeded() const;
+    virtual bool generatePlacement(int day,int startPeriod,const bool occupied[][MAX_SLOTS]) const;
+};
+
+class labRequest : public schedulingRequest{
+    public:
+    labRequest(string subj,string sec,timeSlot ts,int pri=1);
+    int getPeriodsNeeded() const override;
+    bool generatePlacement(int day,int startPeriod,const bool occupied[][MAX_SLOTS]) const override;
 };
 
 struct node{
@@ -53,8 +73,6 @@ class requestQueue{
     ~requestQueue();
 };
 
-const int MAX_SLOTS=6;
-
 class circularSlotQueue{
     timeSlot slots[MAX_SLOTS];
     int front, rear, count;
@@ -67,11 +85,10 @@ class circularSlotQueue{
     bool isEmpty() const;
 };
 
-const int MAX_HEAP_SIZE=100;
-
-// max-heap: the request with the highest priority number sits at index 0
+// max-heap: the request with the highest priority number sits at index 0.
+// It stores POINTERS so labRequest objects keep their own behaviour (no slicing).
 class requestHeap{
-    schedulingRequest heapArray[MAX_HEAP_SIZE];
+    schedulingRequest* heapArray[MAX_HEAP_SIZE];
     int heapSize;
 
     void heapifyUp(int index);
@@ -80,10 +97,28 @@ class requestHeap{
 
     public:
     requestHeap();
-    bool insert(schedulingRequest newRequest);
-    schedulingRequest extractMax();
+    bool insert(schedulingRequest* newRequest);
+    schedulingRequest* extractMax();       // nullptr if the heap is empty
     bool isEmpty() const;
     bool isFull() const;
+};
+
+// Backtracking engine: places requests (highest priority first) into a week grid.
+class placementEngine{
+    bool occupied[PLACEMENT_DAYS][MAX_SLOTS];     // true = taken or blocked
+    schedulingRequest* requests[MAX_HEAP_SIZE];
+    int requestCount;
+
+    void markCells(int day,int startPeriod,int periodsNeeded,bool value);
+    bool placeRequest(int requestIndex);          // the recursive backtracking function
+
+    public:
+    placementEngine();
+    void blockSlot(int day,int period);           // e.g. room/faculty unavailable
+    bool addRequest(schedulingRequest* newRequest);
+    void loadFromHeap(requestHeap& heap);
+    bool generateTimetable();                     // true = every request placed
+    void displayTimetable() const;
 };
 
 #endif

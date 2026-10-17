@@ -27,7 +27,7 @@ void timeSlot::display() const {
     cout << dayNames[day] << " Period " << period;
 }
 
-// schedulingRequest 
+//schedulingRequest
 schedulingRequest::schedulingRequest() {
     subject = "";
     section = "";
@@ -41,6 +41,10 @@ schedulingRequest::schedulingRequest(string newSubject, string newSection, timeS
     slot = newSlot;
     valid = false;                     // set properly when isValid() runs
     priority = newPriority;
+}
+
+schedulingRequest::~schedulingRequest() {
+    // nothing to free, but virtual so deleting through a base pointer is safe
 }
 
 bool schedulingRequest::isValid() {
@@ -72,7 +76,50 @@ int schedulingRequest::getPriority() const {
     return priority;
 }
 
-//  node 
+timeSlot schedulingRequest::getSlot() const {
+    return slot;
+}
+
+void schedulingRequest::setSlot(timeSlot newSlot) {
+    slot = newSlot;
+}
+
+// default (lecture) behaviour: needs exactly one free period
+int schedulingRequest::getPeriodsNeeded() const {
+    return 1;
+}
+
+bool schedulingRequest::generatePlacement(int day, int startPeriod, const bool occupied[][MAX_SLOTS]) const {
+    if (day < 0 || day >= PLACEMENT_DAYS) {
+        return false;
+    }
+    if (startPeriod < 1 || startPeriod > MAX_SLOTS) {
+        return false;
+    }
+    return !occupied[day][startPeriod - 1];
+}
+
+// labRequest
+labRequest::labRequest(string newSubject, string newSection, timeSlot newSlot, int newPriority)
+    : schedulingRequest(newSubject, newSection, newSlot, newPriority) {
+}
+
+// a lab runs for 2 back-to-back periods
+int labRequest::getPeriodsNeeded() const {
+    return 2;
+}
+
+bool labRequest::generatePlacement(int day, int startPeriod, const bool occupied[][MAX_SLOTS]) const {
+    if (day < 0 || day >= PLACEMENT_DAYS) {
+        return false;
+    }
+    if (startPeriod < 1 || startPeriod + 1 > MAX_SLOTS) {
+        return false;                  // second period would fall off the end of the day
+    }
+    return !occupied[day][startPeriod - 1] && !occupied[day][startPeriod];
+}
+
+// node
 node::node(schedulingRequest newRequest) {
     data = newRequest;
     next = nullptr;                    // a new node always starts with nothing after it
@@ -199,7 +246,7 @@ bool requestHeap::isFull() const {
 }
 
 void requestHeap::swapRequests(int firstIndex, int secondIndex) {
-    schedulingRequest temporaryRequest = heapArray[firstIndex];
+    schedulingRequest* temporaryRequest = heapArray[firstIndex];
     heapArray[firstIndex] = heapArray[secondIndex];
     heapArray[secondIndex] = temporaryRequest;
 }
@@ -208,7 +255,7 @@ void requestHeap::heapifyUp(int index) {
     while (index > 0) {
         int parentIndex = (index - 1) / 2;
 
-        if (heapArray[index].getPriority() <= heapArray[parentIndex].getPriority()) {
+        if (heapArray[index]->getPriority() <= heapArray[parentIndex]->getPriority()) {
             break;                                  // parent is already bigger, heap is fine
         }
 
@@ -224,12 +271,12 @@ void requestHeap::heapifyDown(int index) {
         int largestIndex = index;
 
         if (leftChildIndex < heapSize &&
-            heapArray[leftChildIndex].getPriority() > heapArray[largestIndex].getPriority()) {
+            heapArray[leftChildIndex]->getPriority() > heapArray[largestIndex]->getPriority()) {
             largestIndex = leftChildIndex;
         }
 
         if (rightChildIndex < heapSize &&
-            heapArray[rightChildIndex].getPriority() > heapArray[largestIndex].getPriority()) {
+            heapArray[rightChildIndex]->getPriority() > heapArray[largestIndex]->getPriority()) {
             largestIndex = rightChildIndex;
         }
 
@@ -242,8 +289,8 @@ void requestHeap::heapifyDown(int index) {
     }
 }
 
-bool requestHeap::insert(schedulingRequest newRequest) {
-    if (isFull()) {
+bool requestHeap::insert(schedulingRequest* newRequest) {
+    if (isFull() || newRequest == nullptr) {
         return false;
     }
 
@@ -253,14 +300,101 @@ bool requestHeap::insert(schedulingRequest newRequest) {
     return true;
 }
 
-schedulingRequest requestHeap::extractMax() {
+schedulingRequest* requestHeap::extractMax() {
     if (isEmpty()) {
-        return schedulingRequest();
+        return nullptr;
     }
 
-    schedulingRequest highestRequest = heapArray[0];
+    schedulingRequest* highestRequest = heapArray[0];
     heapSize--;
     heapArray[0] = heapArray[heapSize];             // move the last element to the root
     heapifyDown(0);                                 // then sink it down
     return highestRequest;
+}
+
+// ---------------- placementEngine (backtracking) ----------------
+placementEngine::placementEngine() {
+    for (int day = 0; day < PLACEMENT_DAYS; day++) {
+        for (int period = 0; period < MAX_SLOTS; period++) {
+            occupied[day][period] = false;          // whole week starts free
+        }
+    }
+    requestCount = 0;
+}
+
+void placementEngine::blockSlot(int day, int period) {
+    if (day >= 0 && day < PLACEMENT_DAYS && period >= 1 && period <= MAX_SLOTS) {
+        occupied[day][period - 1] = true;
+    }
+}
+
+bool placementEngine::addRequest(schedulingRequest* newRequest) {
+    if (requestCount == MAX_HEAP_SIZE || newRequest == nullptr) {
+        return false;
+    }
+    requests[requestCount] = newRequest;
+    requestCount++;
+    return true;
+}
+
+// pulls requests out of the heap, so index 0 is the highest priority
+void placementEngine::loadFromHeap(requestHeap& heap) {
+    while (!heap.isEmpty()) {
+        addRequest(heap.extractMax());
+    }
+}
+
+void placementEngine::markCells(int day, int startPeriod, int periodsNeeded, bool value) {
+    for (int offset = 0; offset < periodsNeeded; offset++) {
+        occupied[day][startPeriod - 1 + offset] = value;
+    }
+}
+
+bool placementEngine::placeRequest(int requestIndex) {
+    if (requestIndex == requestCount) {
+        return true;                                // base case: every request is placed
+    }
+
+    schedulingRequest* currentRequest = requests[requestIndex];
+    int periodsNeeded = currentRequest->getPeriodsNeeded();
+
+    for (int day = 0; day < PLACEMENT_DAYS; day++) {
+        for (int period = 1; period <= MAX_SLOTS; period++) {
+            // virtual call: lecture and lab decide for themselves if they fit here
+            if (!currentRequest->generatePlacement(day, period, occupied)) {
+                continue;
+            }
+
+            markCells(day, period, periodsNeeded, true);                   // 1. choose
+            currentRequest->setSlot(timeSlot(static_cast<Day>(day), period));
+
+            if (placeRequest(requestIndex + 1)) {                          // 2. explore
+                return true;
+            }
+
+            markCells(day, period, periodsNeeded, false);                  // 3. undo (backtrack)
+        }
+    }
+
+    return false;                                   // no slot worked, tell the caller to undo
+}
+
+bool placementEngine::generateTimetable() {
+    return placeRequest(0);
+}
+
+void placementEngine::displayTimetable() const {
+    cout << "      ";
+    for (int period = 1; period <= MAX_SLOTS; period++) {
+        cout << "P" << period << " ";
+    }
+    cout << endl;
+
+    for (int day = 0; day < PLACEMENT_DAYS; day++) {
+        cout << dayNames[day] << "   ";
+        for (int period = 0; period < MAX_SLOTS; period++) {
+            cout << (occupied[day][period] ? "X  " : ".  ");
+        }
+        cout << endl;
+    }
 }
