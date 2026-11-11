@@ -4,7 +4,7 @@ using namespace std;
 
 const string dayNames[] = {"Mon", "Tue", "Wed", "Thu", "Fri", "Sat"};
 
-// timeSlot
+// ---------------- timeSlot ----------------
 timeSlot::timeSlot() {
     day = MON;
     period = 0;                        // 0 means "not set yet"
@@ -27,7 +27,7 @@ void timeSlot::display() const {
     cout << dayNames[day] << " Period " << period;
 }
 
-//schedulingRequest
+// ---------------- schedulingRequest ----------------
 schedulingRequest::schedulingRequest() {
     subject = "";
     section = "";
@@ -80,6 +80,14 @@ timeSlot schedulingRequest::getSlot() const {
     return slot;
 }
 
+string schedulingRequest::getSubject() const {
+    return subject;
+}
+
+string schedulingRequest::getSection() const {
+    return section;
+}
+
 void schedulingRequest::setSlot(timeSlot newSlot) {
     slot = newSlot;
 }
@@ -99,7 +107,7 @@ bool schedulingRequest::generatePlacement(int day, int startPeriod, const bool o
     return !occupied[day][startPeriod - 1];
 }
 
-// labRequest
+// ---------------- labRequest ----------------
 labRequest::labRequest(string newSubject, string newSection, timeSlot newSlot, int newPriority)
     : schedulingRequest(newSubject, newSection, newSlot, newPriority) {
 }
@@ -119,13 +127,13 @@ bool labRequest::generatePlacement(int day, int startPeriod, const bool occupied
     return !occupied[day][startPeriod - 1] && !occupied[day][startPeriod];
 }
 
-// node
+// ---------------- node ----------------
 node::node(schedulingRequest newRequest) {
     data = newRequest;
     next = nullptr;                    // a new node always starts with nothing after it
 }
 
-// requestQueue (linked list) 
+// ---------------- requestQueue (linked list) ----------------
 requestQueue::requestQueue() {
     front = nullptr;
     rear = nullptr;
@@ -232,7 +240,7 @@ timeSlot circularSlotQueue::dequeueSlot() {
     return removedSlot;
 }
 
-// requestHeap (max-heap by priority) 
+// ---------------- requestHeap (max-heap by priority, stores pointers) ----------------
 requestHeap::requestHeap() {
     heapSize = 0;
 }
@@ -312,14 +320,31 @@ schedulingRequest* requestHeap::extractMax() {
     return highestRequest;
 }
 
+// ---------------- SchedulingFailedException ----------------
+SchedulingFailedException::SchedulingFailedException(string failureReason) {
+    reason = failureReason;
+}
+
+const char* SchedulingFailedException::what() const noexcept {
+    return reason.c_str();
+}
+
 // ---------------- placementEngine (backtracking) ----------------
+// true if 'candidate' must be placed before 'other'
+static bool shouldComeBefore(const schedulingRequest* candidate, const schedulingRequest* other) {
+    if (candidate->getPriority() != other->getPriority()) {
+        return candidate->getPriority() > other->getPriority();
+    }
+    return candidate->getPeriodsNeeded() > other->getPeriodsNeeded();   // labs are harder to fit, so first
+}
+
 placementEngine::placementEngine() {
     for (int day = 0; day < PLACEMENT_DAYS; day++) {
         for (int period = 0; period < MAX_SLOTS; period++) {
             occupied[day][period] = false;          // whole week starts free
         }
     }
-    requestCount = 0;
+    furthestRequestIndex = 0;
 }
 
 void placementEngine::blockSlot(int day, int period) {
@@ -329,18 +354,38 @@ void placementEngine::blockSlot(int day, int period) {
 }
 
 bool placementEngine::addRequest(schedulingRequest* newRequest) {
-    if (requestCount == MAX_HEAP_SIZE || newRequest == nullptr) {
+    if (newRequest == nullptr) {
         return false;
     }
-    requests[requestCount] = newRequest;
-    requestCount++;
+    requests.push_back(newRequest);
     return true;
 }
 
-// pulls requests out of the heap, so index 0 is the highest priority
+// pulls requests out of the old array-based heap
 void placementEngine::loadFromHeap(requestHeap& heap) {
     while (!heap.isEmpty()) {
         addRequest(heap.extractMax());
+    }
+}
+
+// pulls requests out of the generic template heap
+void placementEngine::loadFromPriorityQueue(PriorityQueue<schedulingRequest*>& priorityQueue) {
+    while (!priorityQueue.isEmpty()) {
+        addRequest(priorityQueue.extractMax());
+    }
+}
+
+// insertion sort (written by hand, no std::sort)
+void placementEngine::sortRequests() {
+    for (size_t index = 1; index < requests.size(); index++) {
+        schedulingRequest* currentRequest = requests[index];
+        int previousIndex = static_cast<int>(index) - 1;
+
+        while (previousIndex >= 0 && shouldComeBefore(currentRequest, requests[previousIndex])) {
+            requests[previousIndex + 1] = requests[previousIndex];   // shift right
+            previousIndex--;
+        }
+        requests[previousIndex + 1] = currentRequest;
     }
 }
 
@@ -351,8 +396,12 @@ void placementEngine::markCells(int day, int startPeriod, int periodsNeeded, boo
 }
 
 bool placementEngine::placeRequest(int requestIndex) {
-    if (requestIndex == requestCount) {
+    if (requestIndex == static_cast<int>(requests.size())) {
         return true;                                // base case: every request is placed
+    }
+
+    if (requestIndex > furthestRequestIndex) {
+        furthestRequestIndex = requestIndex;        // remember how deep the search got
     }
 
     schedulingRequest* currentRequest = requests[requestIndex];
@@ -379,8 +428,15 @@ bool placementEngine::placeRequest(int requestIndex) {
     return false;                                   // no slot worked, tell the caller to undo
 }
 
-bool placementEngine::generateTimetable() {
-    return placeRequest(0);
+void placementEngine::generateTimetable() {
+    sortRequests();
+    furthestRequestIndex = 0;
+
+    if (!placeRequest(0)) {
+        schedulingRequest* blockedRequest = requests[furthestRequestIndex];
+        throw SchedulingFailedException("No feasible slot for " + blockedRequest->getSubject() +
+                                        " (Section " + blockedRequest->getSection() + ")");
+    }
 }
 
 void placementEngine::displayTimetable() const {
@@ -396,5 +452,23 @@ void placementEngine::displayTimetable() const {
             cout << (occupied[day][period] ? "X  " : ".  ");
         }
         cout << endl;
+    }
+}
+
+// groups requests by section using a map<section, vector of requests>
+void placementEngine::displayBySection() const {
+    map<string, vector<schedulingRequest*> > requestsBySection;
+
+    for (size_t index = 0; index < requests.size(); index++) {
+        requestsBySection[requests[index]->getSection()].push_back(requests[index]);
+    }
+
+    for (const auto& sectionEntry : requestsBySection) {
+        cout << "Section " << sectionEntry.first << ":" << endl;
+        for (size_t index = 0; index < sectionEntry.second.size(); index++) {
+            cout << "  ";
+            sectionEntry.second[index]->display();
+            cout << endl;
+        }
     }
 }
