@@ -1,5 +1,6 @@
-
 #include "classroom.h"
+
+using namespace std;
 
 //------------------------------
 // EQUIPMENT DEFINITIONS
