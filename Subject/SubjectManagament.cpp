@@ -1,4 +1,5 @@
 #include "SubjectManagement.h"
+#include <sstream>
 
 Subject::Subject() {
     code = "";
@@ -141,3 +142,83 @@ SubjectHash::~SubjectHash() {
         }
     }
 }
+Resource::Resource(string i, string n, string t) {
+    id = i;
+    name = n;
+    type = t;
+}
+template <class T>
+void Repository<T>::add(T item) {
+    items.push_back(item);
+}
+
+template <class T>
+T* Repository<T>::get(int index) {
+    if (index < 0 || index >= items.size())
+        return nullptr;
+
+    return &items[index];
+}
+
+template <class T>
+int Repository<T>::size() {
+    return items.size();
+}
+void ResourceGraph::addConflict(string a, string b) {
+    adj[a].push_back(b);
+    adj[b].push_back(a);
+}
+
+string ResourceGraph::displayGraph() {
+    stringstream ss;
+
+    for (auto &p : adj) {
+        ss << p.first << " -> ";
+
+        for (auto &x : p.second) {
+            ss << x << " ";
+        }
+
+        ss << "\n";
+    }
+
+    return ss.str();
+}
+
+// Disjoint Set
+void DisjointSet::add(string x) {
+    parent[x] = x;
+    rankValue[x] = 0;
+}
+
+string DisjointSet::find(string x) {
+    if (parent[x] != x)
+        parent[x] = find(parent[x]);
+
+    return parent[x];
+}
+
+void DisjointSet::unite(string a, string b) {
+    string rootA = find(a);
+    string rootB = find(b);
+
+    if (rootA == rootB)
+        return;
+
+    if (rankValue[rootA] < rankValue[rootB]) {
+        parent[rootA] = rootB;
+    }
+    else if (rankValue[rootA] > rankValue[rootB]) {
+        parent[rootB] = rootA;
+    }
+    else {
+        parent[rootB] = rootA;
+        rankValue[rootA]++;
+    }
+}
+
+bool DisjointSet::isSameSet(string a, string b) {
+    return find(a) == find(b);
+}
+template class Repository<Resource>;
+
