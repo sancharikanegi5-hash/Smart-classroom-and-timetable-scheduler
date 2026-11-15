@@ -1,1 +1,920 @@
+/* =========================================================
+   Smart Timetable Scheduler - College Software Interface
+   Academic, Clean, Functional, and Professional Design
+   ========================================================= */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 13px;
+    line-height: 1.45;
+    background-color: #f1f5f9;
+    color: #1e293b;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* =========================================================
+   APP HEADER (Traditional Academic Bar)
+   ========================================================= */
+.app-header {
+    background-color: #0f172a;
+    color: #ffffff;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 3px solid #2563eb;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.app-logo-badge {
+    background-color: #2563eb;
+    color: #ffffff;
+    font-weight: bold;
+    font-size: 12px;
+    letter-spacing: 1px;
+    padding: 4px 8px;
+    border-radius: 2px;
+}
+
+.app-title-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.app-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #ffffff;
+    letter-spacing: 0.3px;
+}
+
+.app-subtitle {
+    font-size: 11px;
+    color: #94a3b8;
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Header Buttons */
+.btn-header {
+    background-color: #1e293b;
+    color: #f1f5f9;
+    border: 1px solid #334155;
+    padding: 5px 11px;
+    font-size: 11.5px;
+    font-weight: 600;
+    border-radius: 2px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+}
+
+.btn-header:hover {
+    background-color: #334155;
+    color: #ffffff;
+}
+
+.btn-header.btn-sample {
+    background-color: #0369a1;
+    border-color: #0284c7;
+    color: #ffffff;
+}
+
+.btn-header.btn-sample:hover {
+    background-color: #0284c7;
+}
+
+.btn-header.btn-zip {
+    background-color: #047857;
+    border-color: #059669;
+    color: #ffffff;
+}
+
+.btn-header.btn-zip:hover {
+    background-color: #059669;
+}
+
+/* =========================================================
+   MAIN PORTAL LAYOUT
+   ========================================================= */
+.portal-main {
+    max-width: 1240px;
+    margin: 15px auto 40px;
+    padding: 0 15px;
+}
+
+/* =========================================================
+   NAVIGATION TABS
+   ========================================================= */
+.portal-nav-tabs {
+    display: flex;
+    background-color: #e2e8f0;
+    border: 1px solid #cbd5e1;
+    border-bottom: none;
+    border-radius: 3px 3px 0 0;
+    overflow-x: auto;
+}
+
+.nav-tab {
+    background: transparent;
+    border: none;
+    border-right: 1px solid #cbd5e1;
+    padding: 10px 16px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #475569;
+    cursor: pointer;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: background 0.1s ease, color 0.1s ease;
+}
+
+.nav-tab:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+.nav-tab.active {
+    background-color: #ffffff;
+    color: #0f172a;
+    font-weight: 700;
+    border-top: 2px solid #2563eb;
+    margin-top: -1px;
+}
+
+.tab-badge {
+    background-color: #cbd5e1;
+    color: #0f172a;
+    font-size: 10.5px;
+    padding: 1px 6px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+.nav-tab.active .tab-badge {
+    background-color: #2563eb;
+    color: #ffffff;
+}
+
+/* =========================================================
+   TAB PANELS & CONTENT BOXES
+   ========================================================= */
+.tab-panel {
+    display: none;
+}
+
+.tab-panel.active {
+    display: block;
+}
+
+.panel-box {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 0 0 3px 3px;
+    padding: 20px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
+.panel-heading {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.panel-heading h2 {
+    font-size: 15px;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.panel-desc {
+    display: block;
+    font-size: 11.5px;
+    color: #64748b;
+    margin-top: 2px;
+}
+
+.req {
+    color: #dc2626;
+    font-weight: bold;
+}
+
+/* =========================================================
+   FORM GRID & INPUT CONTROLS
+   ========================================================= */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px 16px;
+    margin-bottom: 16px;
+}
+
+.field-col-2 {
+    grid-column: span 2;
+}
+
+@media (max-width: 768px) {
+    .field-col-2 {
+        grid-column: span 1;
+    }
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-field label {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #334155;
+    margin-bottom: 4px;
+}
+
+.form-field input,
+.form-field select {
+    padding: 6px 9px;
+    font-size: 12.5px;
+    border: 1px solid #cbd5e1;
+    border-radius: 2px;
+    background-color: #ffffff;
+    color: #0f172a;
+}
+
+.form-field input:focus,
+.form-field select:focus {
+    outline: none;
+    border-color: #2563eb;
+    box-shadow: 0 0 0 1px #2563eb;
+}
+
+/* Sub-panel (Period Timings) */
+.sub-panel {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 12px 14px;
+    border-radius: 2px;
+    margin-top: 10px;
+    margin-bottom: 16px;
+}
+
+.sub-panel-title {
+    font-size: 12px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.timeslot-compact-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+}
+
+.timeslot-compact-item {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    padding: 6px 8px;
+    border-radius: 2px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.timeslot-compact-item label {
+    font-size: 11px;
+    font-weight: 700;
+    color: #0369a1;
+}
+
+.timeslot-item-inputs {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #64748b;
+}
+
+.timeslot-item-inputs input {
+    flex: 1;
+    padding: 3px 5px;
+    font-size: 11.5px;
+    border: 1px solid #cbd5e1;
+    border-radius: 2px;
+    text-align: center;
+}
+
+/* =========================================================
+   ADMINISTRATIVE TABLES (Clean College Software Tables)
+   ========================================================= */
+.table-container {
+    overflow-x: auto;
+    margin-bottom: 16px;
+    border: 1px solid #cbd5e1;
+    border-radius: 2px;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    font-size: 12px;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 6px 8px;
+    border-bottom: 1px solid #e2e8f0;
+    border-right: 1px solid #f1f5f9;
+    vertical-align: middle;
+}
+
+.admin-table th {
+    background-color: #f8fafc;
+    color: #1e293b;
+    font-weight: 700;
+    font-size: 11.5px;
+    text-align: left;
+    border-bottom: 2px solid #cbd5e1;
+    white-space: nowrap;
+}
+
+.admin-table tr:hover td {
+    background-color: #f8fafc;
+}
+
+.admin-table td input,
+.admin-table td select {
+    width: 100%;
+    padding: 4px 6px;
+    font-size: 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 2px;
+    background-color: #ffffff;
+    color: #0f172a;
+}
+
+.admin-table td input:focus,
+.admin-table td select:focus {
+    outline: none;
+    border-color: #2563eb;
+}
+
+/* =========================================================
+   BUTTONS (Standard Traditional Styling)
+   ========================================================= */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border-radius: 2px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.1s ease;
+}
+
+.btn-primary {
+    background-color: #2563eb;
+    color: #ffffff;
+    border-color: #1d4ed8;
+}
+
+.btn-primary:hover {
+    background-color: #1d4ed8;
+}
+
+.btn-secondary {
+    background-color: #ffffff;
+    color: #334155;
+    border-color: #cbd5e1;
+}
+
+.btn-secondary:hover {
+    background-color: #f1f5f9;
+    color: #0f172a;
+}
+
+.btn-action {
+    background-color: #047857;
+    color: #ffffff;
+    border-color: #065f46;
+}
+
+.btn-action:hover {
+    background-color: #059669;
+}
+
+.btn-remove {
+    background-color: #ffffff;
+    color: #dc2626;
+    border-color: #fca5a5;
+    padding: 3px 8px;
+    font-size: 11px;
+}
+
+.btn-remove:hover {
+    background-color: #fee2e2;
+    color: #991b1b;
+}
+
+.panel-footer-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 16px;
+    padding-top: 12px;
+    border-top: 1px solid #e2e8f0;
+}
+
+/* Generate Main Action Bar */
+.submit-bar {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    padding: 16px;
+    text-align: center;
+    border-radius: 2px;
+    margin-top: 12px;
+}
+
+.btn-generate {
+    background-color: #1e3a8a;
+    color: #ffffff;
+    border-color: #172554;
+    padding: 10px 28px;
+    font-size: 13.5px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+    cursor: pointer;
+}
+
+.btn-generate:hover {
+    background-color: #1d4ed8;
+}
+
+/* =========================================================
+   TIMETABLE VIEW SECTION & OFFICIAL COLLEGE TIMETABLE TABLE
+   ========================================================= */
+.view-toolbar {
+    background-color: #f8fafc;
+    border: 1px solid #cbd5e1;
+    padding: 8px 12px;
+    border-radius: 2px;
+    margin-bottom: 16px;
+}
+
+.section-tabs-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.tabs-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #334155;
+}
+
+.tabs-list {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.section-tab {
+    padding: 4px 10px;
+    font-size: 11.5px;
+    font-weight: 600;
+    background-color: #ffffff;
+    color: #334155;
+    border: 1px solid #cbd5e1;
+    border-radius: 2px;
+    cursor: pointer;
+}
+
+.section-tab:hover {
+    background-color: #f1f5f9;
+}
+
+.section-tab.active {
+    background-color: #1e3a8a;
+    color: #ffffff;
+    border-color: #1e3a8a;
+}
+
+.view-action-buttons {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+/* Printable Sheet */
+.timetable-print-sheet {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    padding: 24px 28px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.placeholder-notice {
+    text-align: center;
+    padding: 50px 20px;
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* Official Timetable Document Header */
+.tt-header {
+    text-align: center;
+    margin-bottom: 12px;
+}
+
+.tt-institution {
+    font-family: Georgia, 'Times New Roman', serif;
+    font-size: 20pt;
+    font-weight: bold;
+    color: #0f172a;
+    line-height: 1.2;
+    margin-bottom: 3px;
+}
+
+.tt-department {
+    font-size: 12pt;
+    font-weight: bold;
+    color: #1e293b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+}
+
+.tt-doc-title {
+    font-size: 13.5pt;
+    font-weight: bold;
+    color: #000000;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+}
+
+.tt-meta-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 10pt;
+    font-weight: normal;
+    color: #000000;
+    border-top: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    padding: 4px 0;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tt-meta-row strong {
+    font-weight: bold;
+}
+
+/* Master Weekly Grid Table */
+.tt-grid-wrapper {
+    width: 100%;
+    margin-bottom: 14px;
+    overflow-x: auto;
+}
+
+.tt-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1.5px solid #000000;
+    font-size: 8.5pt;
+    background-color: #ffffff;
+}
+
+.tt-table th,
+.tt-table td {
+    border: 1px solid #000000;
+    padding: 5px 3px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.tt-table th {
+    background-color: #e2e8f0;
+    color: #000000;
+    font-weight: bold;
+    font-size: 8pt;
+    line-height: 1.2;
+}
+
+.tt-table th.col-day-time {
+    width: 65px;
+    font-size: 8.5pt;
+    background-color: #cbd5e1;
+}
+
+.tt-table td.row-day {
+    font-weight: bold;
+    font-size: 9pt;
+    background-color: #e2e8f0;
+    width: 65px;
+}
+
+.cell-subject-code {
+    font-weight: bold;
+    font-size: 8.5pt;
+    color: #000000;
+    margin-bottom: 2px;
+}
+
+.cell-combined-badge {
+    font-size: 7pt;
+    font-weight: 700;
+    color: #1e3a8a;
+    background-color: #dbeafe;
+    border: 1px solid #bfdbfe;
+    padding: 1px 4px;
+    border-radius: 2px;
+    display: inline-block;
+    margin-bottom: 2px;
+    letter-spacing: 0.2px;
+}
+
+.combined-picker {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 2px;
+    padding: 3px 6px;
+    max-height: 80px;
+    overflow-y: auto;
+}
+
+.cb-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: #1e293b;
+    cursor: pointer;
+    background: #f1f5f9;
+    padding: 2px 5px;
+    border-radius: 2px;
+    border: 1px solid #e2e8f0;
+    user-select: none;
+}
+
+.cb-label:hover {
+    background: #e2e8f0;
+}
+
+.cb-label input {
+    margin: 0;
+    cursor: pointer;
+}
+
+.combined-strength-hint {
+    font-size: 10px;
+    color: #475569;
+    margin-top: 2px;
+    font-style: italic;
+}
+
+.cell-room-code {
+    font-size: 7.5pt;
+    color: #1e293b;
+}
+
+.tt-table td.lab-merged {
+    background-color: #ffffff;
+}
+
+.tt-table td.empty-slot {
+    background-color: #ffffff;
+}
+
+.tt-table td.tt-break-cell {
+    background-color: #f1f5f9;
+    color: #475569;
+    font-weight: bold;
+    font-size: 7.5pt;
+    letter-spacing: 1px;
+}
+
+/* Subject Legend & Details Table */
+.tt-details-wrapper {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.tt-details-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1.5px solid #000000;
+    font-size: 8.5pt;
+    background-color: #ffffff;
+}
+
+.tt-details-table th,
+.tt-details-table td {
+    border: 1px solid #000000;
+    padding: 4px 6px;
+    text-align: left;
+}
+
+.tt-details-table th {
+    background-color: #cbd5e1;
+    color: #000000;
+    font-weight: bold;
+    font-size: 8.5pt;
+}
+
+.tt-details-table tr.category-bar td {
+    background-color: #e2e8f0;
+    font-weight: bold;
+    font-size: 8.5pt;
+    color: #000000;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.tt-coordinator-footer {
+    font-size: 10pt;
+    font-weight: bold;
+    color: #000000;
+    text-transform: uppercase;
+    margin-top: 8px;
+    padding-top: 2px;
+}
+
+/* Multi-Section Page Break */
+.page-break {
+    page-break-after: always;
+    break-after: page;
+}
+
+/* Error Banner */
+.error-banner {
+    background-color: #fef2f2;
+    color: #991b1b;
+    border: 1px solid #fecaca;
+    padding: 10px 14px;
+    border-radius: 2px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+/* Loading Overlay */
+.loading-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(15, 23, 42, 0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.loading-card {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 3px;
+    padding: 24px 32px;
+    text-align: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    max-width: 420px;
+}
+
+.loading-card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #0f172a;
+    margin: 10px 0 4px;
+}
+
+.loading-card p {
+    font-size: 12px;
+    color: #475569;
+}
+
+.loading-sub {
+    display: block;
+    font-size: 11px;
+    color: #94a3b8;
+    margin-top: 6px;
+}
+
+.spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid #cbd5e1;
+    border-top-color: #2563eb;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =========================================================
+   PRINT STYLES (A4 Portrait Document)
+   ========================================================= */
+@media print {
+    @page {
+        size: A4 portrait;
+        margin: 8mm 10mm;
+    }
+
+    body {
+        background-color: #ffffff !important;
+        color: #000000 !important;
+        font-size: 8.5pt;
+    }
+
+    .no-print,
+    .app-header,
+    .portal-nav-tabs,
+    .panel-heading,
+    .panel-footer-actions,
+    .submit-bar,
+    .loading-overlay {
+        display: none !important;
+    }
+
+    .portal-main {
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .panel-box,
+    .timetable-print-sheet {
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        background-color: transparent !important;
+    }
+
+    .tt-table,
+    .tt-details-table {
+        border: 1.5px solid #000000 !important;
+        page-break-inside: avoid;
+    }
+
+    .tt-table th,
+    .tt-table td,
+    .tt-details-table th,
+    .tt-details-table td {
+        border: 1px solid #000000 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .tt-table th,
+    .tt-table td.row-day,
+    .tt-details-table th,
+    .tt-details-table tr.category-bar td {
+        background-color: #e2e8f0 !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+}
 

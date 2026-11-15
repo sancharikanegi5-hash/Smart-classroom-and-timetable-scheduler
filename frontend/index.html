@@ -1,1 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Timetable Scheduler - College Academic System</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- ============ TOP INSTITUTIONAL APP HEADER ============ -->
+    <header class="app-header">
+        <div class="header-left">
+            <span class="app-logo-badge">CSE</span>
+            <div class="app-title-group">
+                <h1 class="app-title">Smart Timetable Scheduler</h1>
+                <span class="app-subtitle">College Academic Timetable &amp; Classroom Management System</span>
+            </div>
+        </div>
+        <div class="header-right">
+            <button type="button" class="btn btn-header btn-sample" onclick="loadSampleDataWithConfirmation()" title="Load Graphic Era reference sample data">
+                Load Sample Data
+            </button>
+            <button type="button" class="btn btn-header" onclick="saveConfigToFile()" title="Save configuration to JSON file">
+                Save Config
+            </button>
+            <label class="btn btn-header" title="Load configuration from JSON file">
+                Load Config
+                <input type="file" id="load-config-file" accept=".json" style="display:none;" onchange="loadConfigFromFile(this)">
+            </label>
+            <a href="/Smart-classroom-and-timetable-scheduler.zip" class="btn btn-header btn-zip" download title="Download full source code ZIP">
+                Download ZIP
+            </a>
+        </div>
+    </header>
+
+    <!-- ============ MAIN PORTAL CONTAINER ============ -->
+    <main class="portal-main">
+
+        <!-- NAVIGATION TAB BAR -->
+        <nav class="portal-nav-tabs">
+            <button type="button" class="nav-tab active" data-tab="tab-institution" onclick="switchPortalTab('tab-institution')">
+                1. Institution &amp; Timings
+            </button>
+            <button type="button" class="nav-tab" data-tab="tab-sections" onclick="switchPortalTab('tab-sections')">
+                2. Sections (Batches) <span id="badge-sections" class="tab-badge">1</span>
+            </button>
+            <button type="button" class="nav-tab" data-tab="tab-faculty" onclick="switchPortalTab('tab-faculty')">
+                3. Faculty <span id="badge-faculty" class="tab-badge">0</span>
+            </button>
+            <button type="button" class="nav-tab" data-tab="tab-rooms" onclick="switchPortalTab('tab-rooms')">
+                4. Classrooms &amp; Labs <span id="badge-rooms" class="tab-badge">0</span>
+            </button>
+            <button type="button" class="nav-tab" data-tab="tab-subjects" onclick="switchPortalTab('tab-subjects')">
+                5. Subjects Master <span id="badge-subjects" class="tab-badge">0</span>
+            </button>
+            <button type="button" class="nav-tab" data-tab="tab-assignments" onclick="switchPortalTab('tab-assignments')">
+                6. Class Assignments <span id="badge-assignments" class="tab-badge">0</span>
+            </button>
+            <button type="button" class="nav-tab" data-tab="tab-view" id="nav-tab-view" onclick="switchPortalTab('tab-view')">
+                7. View Timetable
+            </button>
+        </nav>
+
+        <!-- MASTER FORM WRAPPER -->
+        <form id="timetable-form">
+
+            <!-- TAB 1: INSTITUTION & TIMINGS -->
+            <section id="tab-institution" class="tab-panel active">
+                <div class="panel-box">
+                    <div class="panel-heading">
+                        <h2>1. Institution &amp; Schedule Parameters</h2>
+                        <span class="panel-desc">Configure college identity, academic session, working days, and period timings.</span>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-field field-col-2">
+                            <label for="universityName">College / University Name <span class="req">*</span></label>
+                            <input type="text" id="universityName" placeholder="e.g. Graphic Era Hill University / Delhi Technological University" required>
+                        </div>
+                        <div class="form-field field-col-2">
+                            <label for="departmentName">Department Name <span class="req">*</span></label>
+                            <input type="text" id="departmentName" placeholder="e.g. Department of Computer Science &amp; Engineering" required>
+                        </div>
+                        <div class="form-field">
+                            <label for="courseName">Course Name</label>
+                            <input type="text" id="courseName" placeholder="e.g. B.Tech CSE">
+                        </div>
+                        <div class="form-field">
+                            <label for="academicYear">Academic Year</label>
+                            <input type="text" id="academicYear" placeholder="e.g. 2026-27">
+                        </div>
+                        <div class="form-field">
+                            <label for="wefDate">w. e. f. Date</label>
+                            <input type="text" id="wefDate" placeholder="e.g. 13-07-2026">
+                        </div>
+                        <div class="form-field">
+                            <label for="workingDays">Working Days per Week</label>
+                            <select id="workingDays">
+                                <option value="5" selected>Monday - Friday (5 Days)</option>
+                                <option value="6">Monday - Saturday (6 Days)</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="periodsPerDay">Periods per Day</label>
+                            <select id="periodsPerDay" onchange="updateTimeSlotInputs()">
+                                <option value="5">5 Periods</option>
+                                <option value="6">6 Periods</option>
+                                <option value="7">7 Periods</option>
+                                <option value="8" selected>8 Periods</option>
+                                <option value="10">10 Periods</option>
+                            </select>
+                        </div>
+                        <div class="form-field">
+                            <label for="breakAfterPeriod">Lunch Break Position</label>
+                            <select id="breakAfterPeriod">
+                                <option value="0">No Lunch Break</option>
+                                <option value="3">After Period 3</option>
+                                <option value="4">After Period 4</option>
+                                <option value="5">After Period 5</option>
+                                <option value="6" selected>After Period 6</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="sub-panel">
+                        <div class="sub-panel-title">Period Timings (Start - End)</div>
+                        <div id="timeslot-inputs" class="timeslot-compact-grid"></div>
+                    </div>
+
+                    <div class="panel-footer-actions">
+                        <button type="button" class="btn btn-secondary" onclick="switchPortalTab('tab-sections')">Next: Sections &rarr;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: SECTIONS MANAGEMENT -->
+            <section id="tab-sections" class="tab-panel">
+                <div class="panel-box">
+                    <div class="panel-heading">
+                        <div class="heading-text">
+                            <h2>2. Section Management</h2>
+                            <span class="panel-desc">Add sections/batches to schedule simultaneously. C++ scheduler prevents conflicts across all sections.</span>
+                        </div>
+                        <button type="button" class="btn btn-action" onclick="addSectionRow()">+ Add Section</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table" id="sections-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 160px;">Section Name / ID <span class="req">*</span></th>
+                                    <th>Course</th>
+                                    <th style="width: 110px;">Semester</th>
+                                    <th style="width: 130px;">Student Strength <span class="req">*</span></th>
+                                    <th>Class Co-ordinator</th>
+                                    <th style="width: 90px; text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sections-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="panel-footer-actions">
+                        <button type="button" class="btn btn-secondary" onclick="switchPortalTab('tab-institution')">&larr; Back</button>
+                        <button type="button" class="btn btn-primary" onclick="switchPortalTab('tab-faculty')">Next: Faculty &rarr;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 3: FACULTY MANAGEMENT -->
+            <section id="tab-faculty" class="tab-panel">
+                <div class="panel-box">
+                    <div class="panel-heading">
+                        <div class="heading-text">
+                            <h2>3. Faculty Management</h2>
+                            <span class="panel-desc">Register teachers and professors. The scheduler prevents double-booking any teacher across sections.</span>
+                        </div>
+                        <button type="button" class="btn btn-action" onclick="addFacultyRow()">+ Add Faculty</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table" id="faculty-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 140px;">Faculty ID</th>
+                                    <th>Faculty Name <span class="req">*</span></th>
+                                    <th style="width: 220px;">Department</th>
+                                    <th style="width: 90px; text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="faculty-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="panel-footer-actions">
+                        <button type="button" class="btn btn-secondary" onclick="switchPortalTab('tab-sections')">&larr; Back</button>
+                        <button type="button" class="btn btn-primary" onclick="switchPortalTab('tab-rooms')">Next: Rooms &rarr;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 4: CLASSROOMS & LABS -->
+            <section id="tab-rooms" class="tab-panel">
+                <div class="panel-box">
+                    <div class="panel-heading">
+                        <div class="heading-text">
+                            <h2>4. Classroom &amp; Laboratory Management</h2>
+                            <span class="panel-desc">Register lecture rooms and practical labs. The scheduler prevents room collisions across all sections.</span>
+                        </div>
+                        <button type="button" class="btn btn-action" onclick="addRoomRow()">+ Add Classroom / Lab</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table" id="rooms-table">
+                            <thead>
+                                <tr>
+                                    <th>Room Number / ID <span class="req">*</span></th>
+                                    <th style="width: 220px;">Room Type</th>
+                                    <th style="width: 140px;">Seating Capacity</th>
+                                    <th style="width: 90px; text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="rooms-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="panel-footer-actions">
+                        <button type="button" class="btn btn-secondary" onclick="switchPortalTab('tab-faculty')">&larr; Back</button>
+                        <button type="button" class="btn btn-primary" onclick="switchPortalTab('tab-subjects')">Next: Subjects &rarr;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 5: SUBJECTS MASTER -->
+            <section id="tab-subjects" class="tab-panel">
+                <div class="panel-box">
+                    <div class="panel-heading">
+                        <div class="heading-text">
+                            <h2>5. Subjects Master List</h2>
+                            <span class="panel-desc">List all courses and practical labs taught this semester.</span>
+                        </div>
+                        <button type="button" class="btn btn-action" onclick="addSubjectRow()">+ Add Subject</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table" id="subjects-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 160px;">Subject Code <span class="req">*</span></th>
+                                    <th>Subject Name <span class="req">*</span></th>
+                                    <th style="width: 120px;">Hours / Wk</th>
+                                    <th style="width: 180px;">Type</th>
+                                    <th style="width: 150px;">Category</th>
+                                    <th style="width: 90px; text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="subjects-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="panel-footer-actions">
+                        <button type="button" class="btn btn-secondary" onclick="switchPortalTab('tab-rooms')">&larr; Back</button>
+                        <button type="button" class="btn btn-primary" onclick="switchPortalTab('tab-assignments')">Next: Assignments &rarr;</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: CLASS ASSIGNMENTS (SUBJECT X SECTION X FACULTY) -->
+            <section id="tab-assignments" class="tab-panel">
+                <div class="panel-box">
+                    <div class="panel-heading">
+                        <div class="heading-text">
+                            <h2>6. Class Assignments (Subject &times; Section &times; Faculty)</h2>
+                            <span class="panel-desc">Assign subjects, sections, and faculty. Suitable Classrooms and Laboratories are automatically assigned by the C++ scheduler.</span>
+                        </div>
+                        <button type="button" class="btn btn-action" onclick="addAssignmentRow()">+ Add Assignment</button>
+                    </div>
+
+                    <div class="table-container">
+                        <table class="admin-table" id="assignments-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 155px;">Class Type</th>
+                                    <th>Subject <span class="req">*</span></th>
+                                    <th style="min-width: 180px;">Section(s) <span class="req">*</span></th>
+                                    <th>Assigned Faculty</th>
+                                    <th style="width: 85px;">Hours / Wk</th>
+                                    <th style="width: 145px;">Session Type</th>
+                                    <th style="width: 75px; text-align: center;">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="assignments-body"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="submit-bar">
+                        <button type="submit" class="btn btn-generate" id="btn-generate-main">
+                            Generate Conflict-Free Timetable (All Sections)
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 7: TIMETABLE VIEW (OFFICIAL COLLEGE TIMETABLE FORMAT) -->
+            <section id="tab-view" class="tab-panel">
+                <div class="panel-box">
+                    <div class="panel-heading view-toolbar no-print">
+                        <div class="section-tabs-wrapper">
+                            <span class="tabs-label">Active Section:</span>
+                            <div id="section-tabs" class="tabs-list"></div>
+                        </div>
+                        <div class="view-action-buttons">
+                            <button type="button" class="btn btn-primary" onclick="printCurrentTimetable()">Print Current Section</button>
+                            <button type="button" class="btn btn-secondary" onclick="printAllTimetables()">Print All Sections</button>
+                            <button type="button" class="btn btn-secondary" onclick="switchPortalTab('tab-assignments')">Edit Config</button>
+                        </div>
+                    </div>
+
+                    <div id="error-message" class="error-banner hidden no-print"></div>
+
+                    <!-- Single Section Printable View -->
+                    <div id="single-section-container" class="timetable-print-sheet">
+                        <div id="rendered-timetable-content">
+                            <div class="placeholder-notice">
+                                <p>No timetable generated yet.</p>
+                                <p>Configure your sections and assignments, then click <strong>"Generate Conflict-Free Timetable"</strong>.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Multi-Section Bulk Print View -->
+                    <div id="all-sections-print-container" class="hidden"></div>
+                </div>
+            </section>
+
+        </form>
+    </main>
+
+    <!-- LOADING DIALOG -->
+    <div id="loading" class="loading-overlay hidden">
+        <div class="loading-card">
+            <div class="spinner"></div>
+            <h3>Generating Multi-Section Timetable</h3>
+            <p>Running C++ Recursive Backtracking Algorithm across all sections...</p>
+            <span class="loading-sub">Checking global faculty, classroom, and section availability</span>
+        </div>
+    </div>
+
+    <!-- Hidden compatibility markers for existing scripts -->
+    <div id="home-section" class="hidden"></div>
+    <div id="form-section" class="hidden"></div>
+    <div id="view-section" class="hidden"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
 

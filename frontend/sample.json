@@ -1,1 +1,287 @@
+{
+  "universityName": "Graphic Era Hill University",
+  "departmentName": "DEPARTMENT OF COMPUTER SCIENCE & ENGINEERING",
+  "courseName": "B.Tech C.S.E",
+  "academicYear": "2026-27",
+  "semester": "III",
+  "wefDate": "13-07-2026",
+  "workingDays": 5,
+  "periodsPerDay": 8,
+  "breakAfterPeriod": 6,
+  "timeSlotLabels": [
+    "08:00 - 08:55",
+    "08:55 - 09:50",
+    "10:10 - 11:05",
+    "11:05 - 12:00",
+    "12:00 - 12:55",
+    "12:55 - 01:50",
+    "02:10 - 03:05",
+    "03:05 - 04:00"
+  ],
+  "sections": [
+    {
+      "name": "A",
+      "course": "B.Tech C.S.E",
+      "semester": "III",
+      "coordinator": "Dr. Vikrant Sharma"
+    },
+    {
+      "name": "B",
+      "course": "B.Tech C.S.E",
+      "semester": "III",
+      "coordinator": "Mr. Abhinav Bahuguna"
+    },
+    {
+      "name": "C",
+      "course": "B.Tech C.S.E",
+      "semester": "III",
+      "coordinator": "Ms. Sonali Gupta"
+    }
+  ],
+  "faculty": [
+    { "id": "F1", "name": "Dr. Siddhant Thapliyal", "dept": "CSE" },
+    { "id": "F2", "name": "Dr. Prateek Srivastava", "dept": "CSE" },
+    { "id": "F3", "name": "Dr. V.P. Dubey", "dept": "CSE" },
+    { "id": "F4", "name": "Dr. Makrand Dhyani", "dept": "CSE" },
+    { "id": "F5", "name": "Dr. Upendra Aswal", "dept": "CSE" },
+    { "id": "F6", "name": "Ms. Sonali Gupta", "dept": "CSE" },
+    { "id": "F7", "name": "Mr. Gaurav Dobriyal", "dept": "CSE" },
+    { "id": "F8", "name": "Dr. Vikrant Sharma", "dept": "CSE" },
+    { "id": "F9", "name": "Mr. Abhinav Bahuguna", "dept": "CSE" },
+    { "id": "F10", "name": "Dr. Ajay N. Shukla", "dept": "CSE" }
+  ],
+  "rooms": [
+    { "id": "529(Audi)", "type": "Classroom", "capacity": 120 },
+    { "id": "124 (LT)", "type": "Classroom", "capacity": 80 },
+    { "id": "106 (LT)", "type": "Classroom", "capacity": 80 },
+    { "id": "116 (CR)", "type": "Classroom", "capacity": 60 },
+    { "id": "206 (LT)", "type": "Classroom", "capacity": 80 },
+    { "id": "123 (CR)", "type": "Classroom", "capacity": 60 },
+    { "id": "114 (CR)", "type": "Classroom", "capacity": 60 },
+    { "id": "209 (LAB)", "type": "Laboratory", "capacity": 40 },
+    { "id": "009 (LAB)", "type": "Laboratory", "capacity": 40 },
+    { "id": "121 (LAB)", "type": "Laboratory", "capacity": 40 }
+  ],
+  "subjects": [
+    { "code": "TCS 302", "name": "Data Structures with C", "hours": 4, "isLab": false, "category": "CORE" },
+    { "code": "TCS 307", "name": "Object Oriented Programming with C++", "hours": 3, "isLab": false, "category": "CORE" },
+    { "code": "TCS 308", "name": "Logic Design and Computer Organization", "hours": 3, "isLab": false, "category": "CORE" },
+    { "code": "TMA 316", "name": "Discrete Structures and Combinatorics", "hours": 3, "isLab": false, "category": "CORE" },
+    { "code": "XCS 301", "name": "Career Skills-I", "hours": 2, "isLab": false, "category": "CORE" },
+    { "code": "PCS 302", "name": "Data Structures Lab", "hours": 2, "isLab": true, "category": "LABS" },
+    { "code": "PCS 307", "name": "OOPS with C++ Lab", "hours": 2, "isLab": true, "category": "LABS" }
+  ],
+  "assignments": [
+    {
+      "subjectCode": "TCS 302",
+      "subjectName": "Data Structures with C",
+      "sectionName": "A",
+      "facultyName": "Dr. Siddhant Thapliyal",
+      "roomName": "529(Audi)",
+      "hoursPerWeek": 4,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "TCS 307",
+      "subjectName": "Object Oriented Programming with C++",
+      "sectionName": "A",
+      "facultyName": "Dr. Prateek Srivastava",
+      "roomName": "124 (LT)",
+      "hoursPerWeek": 3,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "TCS 308",
+      "subjectName": "Logic Design and Computer Organization",
+      "sectionName": "A",
+      "facultyName": "Dr. V.P. Dubey",
+      "roomName": "116 (CR)",
+      "hoursPerWeek": 3,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "TMA 316",
+      "subjectName": "Discrete Structures and Combinatorics",
+      "sectionName": "A",
+      "facultyName": "Dr. Makrand Dhyani",
+      "roomName": "206 (LT)",
+      "hoursPerWeek": 3,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "XCS 301",
+      "subjectName": "Career Skills-I",
+      "sectionName": "A",
+      "facultyName": "Mr. Gaurav Dobriyal",
+      "roomName": "123 (CR)",
+      "hoursPerWeek": 2,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "PCS 302",
+      "subjectName": "Data Structures Lab",
+      "sectionName": "A",
+      "facultyName": "Dr. Vikrant Sharma",
+      "roomName": "209 (LAB)",
+      "hoursPerWeek": 2,
+      "isLab": true,
+      "category": "LABS"
+    },
+    {
+      "subjectCode": "PCS 307",
+      "subjectName": "OOPS with C++ Lab",
+      "sectionName": "A",
+      "facultyName": "Dr. Prateek Srivastava",
+      "roomName": "009 (LAB)",
+      "hoursPerWeek": 2,
+      "isLab": true,
+      "category": "LABS"
+    },
+    {
+      "subjectCode": "TCS 302",
+      "subjectName": "Data Structures with C",
+      "sectionName": "B",
+      "facultyName": "Dr. Upendra Aswal",
+      "roomName": "529(Audi)",
+      "hoursPerWeek": 4,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "TCS 307",
+      "subjectName": "Object Oriented Programming with C++",
+      "sectionName": "B",
+      "facultyName": "Dr. Prateek Srivastava",
+      "roomName": "106 (LT)",
+      "hoursPerWeek": 3,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "TCS 308",
+      "subjectName": "Logic Design and Computer Organization",
+      "sectionName": "B",
+      "facultyName": "Dr. V.P. Dubey",
+      "roomName": "116 (CR)",
+      "hoursPerWeek": 3,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "TMA 316",
+      "subjectName": "Discrete Structures and Combinatorics",
+      "sectionName": "B",
+      "facultyName": "Dr. Makrand Dhyani",
+      "roomName": "206 (LT)",
+      "hoursPerWeek": 3,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "XCS 301",
+      "subjectName": "Career Skills-I",
+      "sectionName": "B",
+      "facultyName": "Mr. Gaurav Dobriyal",
+      "roomName": "114 (CR)",
+      "hoursPerWeek": 2,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "PCS 302",
+      "subjectName": "Data Structures Lab",
+      "sectionName": "B",
+      "facultyName": "Dr. Vikrant Sharma",
+      "roomName": "209 (LAB)",
+      "hoursPerWeek": 2,
+      "isLab": true,
+      "category": "LABS"
+    },
+    {
+      "subjectCode": "PCS 307",
+      "subjectName": "OOPS with C++ Lab",
+      "sectionName": "B",
+      "facultyName": "Mr. Abhinav Bahuguna",
+      "roomName": "121 (LAB)",
+      "hoursPerWeek": 2,
+      "isLab": true,
+      "category": "LABS"
+    },
+    {
+      "subjectCode": "TCS 302",
+      "subjectName": "Data Structures with C",
+      "sectionName": "C",
+      "facultyName": "Dr. Siddhant Thapliyal",
+      "roomName": "529(Audi)",
+      "hoursPerWeek": 4,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "TCS 307",
+      "subjectName": "Object Oriented Programming with C++",
+      "sectionName": "C",
+      "facultyName": "Ms. Sonali Gupta",
+      "roomName": "106 (LT)",
+      "hoursPerWeek": 3,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "TCS 308",
+      "subjectName": "Logic Design and Computer Organization",
+      "sectionName": "C",
+      "facultyName": "Dr. V.P. Dubey",
+      "roomName": "114 (CR)",
+      "hoursPerWeek": 3,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "TMA 316",
+      "subjectName": "Discrete Structures and Combinatorics",
+      "sectionName": "C",
+      "facultyName": "Dr. Makrand Dhyani",
+      "roomName": "206 (LT)",
+      "hoursPerWeek": 3,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "XCS 301",
+      "subjectName": "Career Skills-I",
+      "sectionName": "C",
+      "facultyName": "Mr. Gaurav Dobriyal",
+      "roomName": "123 (CR)",
+      "hoursPerWeek": 2,
+      "isLab": false,
+      "category": "CORE"
+    },
+    {
+      "subjectCode": "PCS 302",
+      "subjectName": "Data Structures Lab",
+      "sectionName": "C",
+      "facultyName": "Dr. Ajay N. Shukla",
+      "roomName": "121 (LAB)",
+      "hoursPerWeek": 2,
+      "isLab": true,
+      "category": "LABS"
+    },
+    {
+      "subjectCode": "PCS 307",
+      "subjectName": "OOPS with C++ Lab",
+      "sectionName": "C",
+      "facultyName": "Ms. Sonali Gupta",
+      "roomName": "009 (LAB)",
+      "hoursPerWeek": 2,
+      "isLab": true,
+      "category": "LABS"
+    }
+  ]
+}
 
