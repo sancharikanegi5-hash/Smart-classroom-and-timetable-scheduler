@@ -8,67 +8,90 @@
 #include <unordered_map>
 #include <vector>
 
+using namespace std;
+
+// Equipment Class
 class Equipment {
 private:
-    std::string name;
+    string name;
+
 public:
-    explicit Equipment(std::string name);
-    std::string getName();
+    explicit Equipment(string name);
+    string getName();
 };
 
+// Classroom Base Class
 class Classroom {
 protected:
-    std::string id;
+    string id;
     int capacity;
-    std::vector<Equipment> equipmentList;
+    vector<Equipment> equipmentList;
+
 public:
-    Classroom(std::string id, int capacity, std::vector<Equipment> equipment = {});
+    Classroom(string id, int capacity, vector<Equipment> equipment = {});
+
     virtual ~Classroom();
-    std::string getId();
+
+    string getId();
     int getCapacity();
-    virtual std::string getType();
+
+    virtual string getType();
     virtual int getSetupTime();
     virtual void display();
 };
 
+// SmartClassroom Derived Class
 class SmartClassroom : public Classroom {
 private:
     bool projector;
+
 public:
-    SmartClassroom(std::string id, int capacity, std::vector<Equipment> equipment, bool projector);
+    SmartClassroom(string id, int capacity, vector<Equipment> equipment, bool projector);
+
     ~SmartClassroom() override;
-    std::string getType() override;
+
+    string getType() override;
     int getSetupTime() override;
     void display() override;
 };
 
+// Laboratory Derived Class
 class Laboratory : public Classroom {
 private:
     int computers;
+
 public:
-    Laboratory(std::string id, int capacity, std::vector<Equipment> equipment, int computers);
+    Laboratory(string id, int capacity, vector<Equipment> equipment, int computers);
+
     ~Laboratory() override;
-    std::string getType() override;
+
+    string getType() override;
     int getSetupTime() override;
     void display() override;
 };
 
+// RoomManager Class
 class RoomManager {
 private:
-    std::list<Classroom*> roomList;
-    std::unordered_map<std::string, Classroom*> roomHash;
-    std::priority_queue<std::pair<int, std::string>> roomHeap;
+    list<Classroom*> roomList;
+    unordered_map<string, Classroom*> roomHash;
+    priority_queue<pair<int, string>> roomHeap;
+
     void rebuildHeap();
+
 public:
     RoomManager() = default;
+
     RoomManager(const RoomManager&) = delete;
     RoomManager& operator=(const RoomManager&) = delete;
+
     void addRoom(Classroom* room);
-    void removeRoom(std::string id);
-    void searchRoomByID(std::string id);
+    void removeRoom(string id);
+    void searchRoomByID(string id);
     void searchRoomByCapacity(int capacity);
     void showHighestCapacityRoom();
     void displayAllRooms();
+
     ~RoomManager();
 };
 
