@@ -490,42 +490,6 @@ bool Timetable::isOccupied(int secIdx, int day, int slot) const {
     }
     return sections[secIdx].occupied[day][slot];
 }
-
-
-void Timetable::pushUndo(int secIdx, int day, int slot, int duration) {
-    if (top >= undoCapacity - 1) {
-        resizeUndoStack();
-    }
-    top++;
-    undoStack[top] = UndoItem(secIdx, day, slot, duration);
-}
-
-void Timetable::pushCombinedUndo(const int secIndices[], int count, int day, int slot, int duration) {
-    if (top >= undoCapacity - 1) {
-        resizeUndoStack();
-    }
-    top++;
-    undoStack[top] = UndoItem(secIndices, count, day, slot, duration);
-}
-
-void Timetable::undo() {
-    if (top < 0) return;
-
-    UndoItem item = undoStack[top--];
-    int d = item.day;
-    int s = item.slot;
-    int dur = item.duration;
-
-    for (int c = 0; c < item.sectionIndicesCount; c++) {
-        int sec = item.sectionIndices[c];
-        if (sec >= 0 && sec < sectionCount && d >= 0 && d < DAYS) {
-            for (int k = 0; k < dur && (s + k) < SLOTS; k++) {
-                sections[sec].grid[d][s + k] = SchedulingRequest();
-                sections[sec].occupied[d][s + k] = false;
-            }
-        }
-    }
-}
 void Timetable::displaySection(int secIdx) const {
     if (secIdx < 0 || secIdx >= sectionCount) return;
 
