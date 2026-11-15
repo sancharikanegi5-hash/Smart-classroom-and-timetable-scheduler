@@ -1,90 +1,89 @@
-#ifndef SUBJECT_H
-#define SUBJECT_H
+#ifndef STUDENT_SECTION_H
+#define STUDENT_SECTION_H
 
 #include <iostream>
 #include <string>
 #include <vector>
-#include <unordered_map>
+
 using namespace std;
 
-class Subject {
+const int MAX_STUDENTS = 100;
+
+class Student {
 private:
-    string code;
+    int rollNo;
     string name;
-    int credits;
+    string section;
 
 public:
-    Subject();
-    Subject(string c, string n, int cr);
-    string getCode();
-    string getName();
-    int getCredits();
-    void displaySubject();
-    void displaySubject(int minCredits);
-};
-const int TABLE_SIZE = 10;
+    Student();
+    Student(int roll, const string& studentName, const string& sectionCode);
 
-struct SubjectEntry {
-    string code;
-    string name;
-    SubjectEntry* next;
+    int getRollNo() const;
+    string getName() const;
+    string getSection() const;
+    void display() const;
 };
 
-class SubjectHash {
+class Section {
 private:
-    SubjectEntry* table[TABLE_SIZE];
-
-    int hashFunction(string code);
+    string sectionCode;
+    Student students[MAX_STUDENTS];
+    int studentCount;
+    vector<string> subjects;
 
 public:
-    SubjectHash();
-    ~SubjectHash();
+    Section();
+    explicit Section(const string& code);
 
-    void insertSubject(string code, string name);
-    void searchSubject(string code);
-    void deleteSubject(string code);
-    void displaySubjects();
-}
+    string getSectionCode() const;
 
-struct Resource {
-    string id;
-    string name;
-    string type;
+    bool addStudent(const Student& student);
+    bool removeStudent(int rollNo);
+    const Student* searchStudent(int rollNo) const;
+    void displayAllStudents() const;
 
-    Resource(string, string, string);
+    void linkSubjectsToSection();
+    void displaySectionDetails() const;
 };
 
-template <class T>
-class Repository {
+class Batch : public Section {
 private:
-    vector<T> items;
+    int labGroupNo;
 
 public:
-    void add(T item);
-    T* get(int index);
-    int size();
+    Batch(const string& code, int groupNo);
+    int getLabGroupNo() const;
+    void displayBatch() const;
 };
 
-class ResourceGraph {
-private:
-    unordered_map<string, vector<string>> adj;
+struct SectionNode {
+    Section data;
+    SectionNode* left;
+    SectionNode* right;
 
-public:
-    void addConflict(string a, string b);
-    string displayGraph();
+    explicit SectionNode(const Section& section);
 };
 
-class DisjointSet {
+class SectionBST {
 private:
-    unordered_map<string, string> parent;
-    unordered_map<string, int> rankValue;
+    SectionNode* root;
+
+    SectionNode* insertNode(SectionNode* node, const Section& section, bool& inserted);
+    SectionNode* searchNode(SectionNode* node, const string& code) const;
+    void sortedListing(const SectionNode* node) const;
+    void deleteTree(SectionNode* node);
 
 public:
-    void add(string x);
-    string find(string x);
-    void unite(string a, string b);
-    bool isSameSet(string a, string b);
+    SectionBST();
+    ~SectionBST();
+
+    SectionBST(const SectionBST&) = delete;
+    SectionBST& operator=(const SectionBST&) = delete;
+
+    bool insertSection(const Section& section);
+    Section* searchSection(const string& code) const;
+    void sortedSectionListing() const;
 };
 
 #endif
-
