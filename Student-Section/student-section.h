@@ -7,6 +7,8 @@
 
 using namespace std;
 
+const int MAX_STUDENTS = 100;
+
 class Student {
 private:
     int rollNo;
@@ -26,19 +28,15 @@ public:
 class Section {
 private:
     string sectionCode;
-    vector<Student> students;       
+    Student students[MAX_STUDENTS];
+    int studentCount;
     vector<string> subjects;
-
-    int findStudentIndex(int rollNo) const;
 
 public:
     Section();
     explicit Section(const string& code);
 
     string getSectionCode() const;
-    const vector<Student>& getStudents() const;
-    const vector<string>& getSubjects() const;
-    void setSubjects(const vector<string>& subjectList);
 
     bool addStudent(const Student& student);
     bool removeStudent(int rollNo);
@@ -74,7 +72,6 @@ private:
     SectionNode* insertNode(SectionNode* node, const Section& section, bool& inserted);
     SectionNode* searchNode(SectionNode* node, const string& code) const;
     void sortedListing(const SectionNode* node) const;
-    void collectSections(const SectionNode* node, vector<Section>& result) const;
     void deleteTree(SectionNode* node);
 
 public:
@@ -87,22 +84,6 @@ public:
     bool insertSection(const Section& section);
     Section* searchSection(const string& code) const;
     void sortedSectionListing() const;
-    vector<Section> getAllSections() const;
-
-    
-    bool saveStudents(const string& filename) const;
-    bool loadStudents(const string& filename);
-};
-
-
-class SectionOverlapGraph {
-private:
-    vector<string> sectionCodes;
-    vector<vector<int> > adjacency;
-
-public:
-    void buildGraph(const SectionBST& sectionTree);
-    void displayGraph() const;
 };
 
 #endif
