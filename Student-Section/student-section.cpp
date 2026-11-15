@@ -1,6 +1,10 @@
 #include "student-section.h"
 
+#include <fstream>
+#include <iomanip>
 #include <limits>
+
+
 
 Student::Student() : rollNo(0), name(""), section("") {}
 
@@ -25,66 +29,97 @@ void Student::display() const {
          << ", Section: " << section << '\n';
 }
 
-Section::Section() : sectionCode(""), studentCount(0), subjects() {}
+
+
+Section::Section() : sectionCode(""), students(), subjects() {}
 
 Section::Section(const string& code)
-    : sectionCode(code), studentCount(0), subjects() {}
+    : sectionCode(code), students(), subjects() {}
 
 string Section::getSectionCode() const {
     return sectionCode;
 }
 
-bool Section::addStudent(const Student& student) {
-    if (studentCount >= MAX_STUDENTS) {
-        cout << "Section is full. Cannot add more students.\n";
-        return false;
-    }
+const vector<Student>& Section::getStudents() const {
+    return students;
+}
 
-    for (int i = 0; i < studentCount; ++i) {
-        if (students[i].getRollNo() == student.getRollNo()) {
-            cout << "A student with this roll number already exists in this section.\n";
-            return false;
+const vector<string>& Section::getSubjects() const {
+    return subjects;
+}
+
+void Section::setSubjects(const vector<string>& subjectList) {
+    subjects = subjectList;
+}
+
+
+int Section::findStudentIndex(int rollNo) const {
+    int low = 0;
+    int high = static_cast<int>(students.size()) - 1;
+
+    while (low <= high) {
+        int mid = low + (high - low) / 2;
+        int midRoll = students[mid].getRollNo();
+
+        if (midRoll == rollNo) {
+            return mid;
+        } else if (midRoll < rollNo) {
+            low = mid + 1;
+        } else {
+            high = mid - 1;
         }
     }
 
-    students[studentCount++] = student;
+    return -1;
+}
+
+bool Section::addStudent(const Student& student) {
+    
+    if (findStudentIndex(student.getRollNo()) != -1) {
+        cout << "A student with this roll number already exists in this section.\n";
+        return false;
+    }
+
+    
+    vector<Student>::iterator position = students.begin();
+    while (position != students.end() &&
+           position->getRollNo() < student.getRollNo()) {
+        ++position;
+    }
+    students.insert(position, student);
+
     cout << "Student added successfully.\n";
     return true;
 }
 
 bool Section::removeStudent(int rollNo) {
-    for (int i = 0; i < studentCount; ++i) {
-        if (students[i].getRollNo() == rollNo) {
-            for (int j = i; j < studentCount - 1; ++j) {
-                students[j] = students[j + 1];
-            }
-            --studentCount;
-            cout << "Student removed successfully.\n";
-            return true;
-        }
+    int index = findStudentIndex(rollNo);
+    if (index == -1) {
+        cout << "Student not found.\n";
+        return false;
     }
 
-    cout << "Student not found.\n";
-    return false;
+    students.erase(students.begin() + index);
+    cout << "Student removed successfully.\n";
+    return true;
 }
 
 const Student* Section::searchStudent(int rollNo) const {
-    for (int i = 0; i < studentCount; ++i) {
-        if (students[i].getRollNo() == rollNo) {
-            return &students[i];
-        }
+    int index = findStudentIndex(rollNo);
+    if (index == -1) {
+        return nullptr;
     }
-    return nullptr;
+    return &students[index];
 }
 
 void Section::displayAllStudents() const {
-    if (studentCount == 0) {
+    if (students.empty()) {
         cout << "No students in section " << sectionCode << ".\n";
         return;
     }
 
     cout << "\nStudents in section " << sectionCode << ":\n";
-    for (int i = 0; i < studentCount; ++i) {
+    for (size_t i = 0; i < students.size(); ++i) {
         students[i].display();
     }
 }
@@ -131,6 +166,8 @@ void Section::displaySectionDetails() const {
     displayAllStudents();
 }
 
+
+
 Batch::Batch(const string& code, int groupNo)
     : Section(code), labGroupNo(groupNo) {}
 
@@ -143,6 +180,8 @@ void Batch::displayBatch() const {
     cout << "Lab group number: " << labGroupNo << '\n';
     displaySectionDetails();
 }
+
+
 
 SectionNode::SectionNode(const Section& section)
     : data(section), left(nullptr), right(nullptr) {}
@@ -222,31 +261,215 @@ void SectionBST::sortedSectionListing() const {
     sortedListing(root);
 }
 
-int main() {
-    SectionBST sectionTree;
-    int numberOfSections;
+void SectionBST::collectSections(const SectionNode* node, vector<Section>& result) const {
+    if (node == nullptr) return;
+    collectSections(node->left, result);
+    result.push_back(node->data);
+    collectSections(node->right, result);
+}
 
-    cout << "How many sections do you want to create? ";
-    if (!(cin >> numberOfSections) || numberOfSections < 0) {
-        cout << "Invalid number of sections.\n";
-        return 1;
+vector<Section> SectionBST::getAllSections() const {
+    vector<Section> result;
+    collectSections(root, result);
+    return result;
+}
+
+
+
+bool SectionBST::saveStudents(const string& filename) const {
+    ofstream fout(filename.c_str());
+    if (!fout) {
+        cerr << "Error: Could not open " << filename << " for writing.\n";
+        return false;
     }
-    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
-    for (int i = 0; i < numberOfSections; ++i) {
+    vector<Section> allSections = getAllSections();
+    fout << allSections.size() << '\n';
+
+    for (size_t i = 0; i < allSections.size(); ++i) {
+        const Section& section = allSections[i];
+        const vector<string>& subjectList = section.getSubjects();
+        const vector<Student>& studentList = section.getStudents();
+
+        
+        fout << quoted(section.getSectionCode()) << ' '
+             << subjectList.size() << ' ' << studentList.size() << '\n';
+
+        for (size_t j = 0; j < subjectList.size(); ++j) {
+            fout << quoted(subjectList[j]) << '\n';
+        }
+
+        for (size_t j = 0; j < studentList.size(); ++j) {
+            fout << studentList[j].getRollNo() << ' '
+                 << quoted(studentList[j].getName()) << ' '
+                 << quoted(studentList[j].getSection()) << '\n';
+        }
+    }
+
+    cout << allSections.size() << " section record(s) saved to " << filename << ".\n";
+    return true;
+}
+
+bool SectionBST::loadStudents(const string& filename) {
+    ifstream fin(filename.c_str());
+    if (!fin) {
+        return false; 
+    }
+
+    size_t numberOfSections;
+    if (!(fin >> numberOfSections)) {
+        cerr << "Error: The saved file has an invalid format.\n";
+        return false;
+    }
+
+    SectionBST loadedTree;
+
+    for (size_t i = 0; i < numberOfSections; ++i) {
         string code;
-        cout << "Enter section code " << i + 1 << " (e.g. CSE-A): ";
-        getline(cin, code);
+        size_t subjectCount, studentCount;
 
-        if (code.empty()) {
-            cout << "Section code cannot be empty. Please try again.\n";
-            --i;
-            continue;
+        if (!(fin >> quoted(code) >> subjectCount >> studentCount)) {
+            cerr << "Error: Incomplete section data in file.\n";
+            return false;
         }
 
         Section section(code);
-        if (!sectionTree.insertSection(section)) {
-            --i;
+        vector<string> subjectList;
+
+        for (size_t j = 0; j < subjectCount; ++j) {
+            string subject;
+            if (!(fin >> quoted(subject))) {
+                cerr << "Error: Incomplete subject data in file.\n";
+                return false;
+            }
+            subjectList.push_back(subject);
+        }
+        section.setSubjects(subjectList);
+
+        for (size_t j = 0; j < studentCount; ++j) {
+            int roll;
+            string name, studentSection;
+            if (!(fin >> roll >> quoted(name) >> quoted(studentSection))) {
+                cerr << "Error: Incomplete student data in file.\n";
+                return false;
+            }
+            
+            section.addStudent(Student(roll, name, studentSection));
+        }
+
+        if (!loadedTree.insertSection(section)) {
+            cerr << "Error: Duplicate section code found in saved file.\n";
+            return false;
+        }
+    }
+
+    
+    deleteTree(root);
+    root = loadedTree.root;
+    loadedTree.root = nullptr;
+
+    cout << "Student and section records loaded successfully from " << filename << ".\n";
+    return true;
+}
+
+
+
+void SectionOverlapGraph::buildGraph(const SectionBST& sectionTree) {
+    vector<Section> allSections = sectionTree.getAllSections();
+    sectionCodes.clear();
+    adjacency.clear();
+
+    for (size_t i = 0; i < allSections.size(); ++i) {
+        sectionCodes.push_back(allSections[i].getSectionCode());
+        adjacency.push_back(vector<int>());
+    }
+
+    
+    for (size_t i = 0; i < allSections.size(); ++i) {
+        for (size_t j = i + 1; j < allSections.size(); ++j) {
+            bool sharesSubject = false;
+            const vector<string>& subjectsA = allSections[i].getSubjects();
+            const vector<string>& subjectsB = allSections[j].getSubjects();
+
+            for (size_t a = 0; a < subjectsA.size() && !sharesSubject; ++a) {
+                for (size_t b = 0; b < subjectsB.size(); ++b) {
+                    if (subjectsA[a] == subjectsB[b]) {
+                        sharesSubject = true;
+                        break;
+                    }
+                }
+            }
+
+            if (sharesSubject) {
+                adjacency[i].push_back(static_cast<int>(j));
+                adjacency[j].push_back(static_cast<int>(i));
+            }
+        }
+    }
+}
+
+void SectionOverlapGraph::displayGraph() const {
+    if (sectionCodes.empty()) {
+        cout << "No sections available to build the overlap graph.\n";
+        return;
+    }
+
+    cout << "\n===== SECTION OVERLAP GRAPH =====\n";
+    cout << "An edge means the two sections share at least one subject/elective/lab.\n";
+
+    bool hasEdge = false;
+    for (size_t i = 0; i < sectionCodes.size(); ++i) {
+        cout << sectionCodes[i] << " -> ";
+        if (adjacency[i].empty()) {
+            cout << "No shared subject";
+        } else {
+            for (size_t j = 0; j < adjacency[i].size(); ++j) {
+                if (j > 0) cout << ", ";
+                cout << sectionCodes[adjacency[i][j]];
+                if (static_cast<size_t>(adjacency[i][j]) > i) hasEdge = true;
+            }
+        }
+        cout << '\n';
+    }
+
+    if (!hasEdge) {
+        cout << "No section overlaps found.\n";
+    }
+}
+
+
+
+int main() {
+    SectionBST sectionTree;
+    const string dataFile = "students.txt";
+
+    
+    bool dataLoaded = sectionTree.loadStudents(dataFile);
+
+    if (!dataLoaded) {
+        int numberOfSections;
+        cout << "How many sections do you want to create? ";
+        if (!(cin >> numberOfSections) || numberOfSections < 0) {
+            cout << "Invalid number of sections.\n";
+            return 1;
+        }
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+
+        for (int i = 0; i < numberOfSections; ++i) {
+            string code;
+            cout << "Enter section code " << i + 1 << " (e.g. CSE-A): ";
+            getline(cin, code);
+
+            if (code.empty()) {
+                cout << "Section code cannot be empty. Please try again.\n";
+                --i;
+                continue;
+            }
+
+            Section section(code);
+            if (!sectionTree.insertSection(section)) {
+                --i;
+            }
         }
     }
 
@@ -260,6 +483,9 @@ int main() {
         cout << "5. Display section details\n";
         cout << "6. Display all sections in sorted order\n";
         cout << "7. Create and display a Batch\n";
+        cout << "8. Save student/section records to file\n";
+        cout << "9. Load student/section records from file\n";
+        cout << "10. Build and display section-overlap graph\n";
         cout << "0. Exit\n";
         cout << "Enter choice: ";
 
@@ -346,8 +572,9 @@ int main() {
             cout << "Enter batch/section code: ";
             getline(cin, batchCode);
 
+            int groupNoInput;
             cout << "Enter lab group number: ";
-            if (!(cin >> groupNo)) {
+            if (!(cin >> groupNoInput)) {
                 cout << "Invalid lab group number.\n";
                 cin.clear();
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
@@ -355,8 +582,19 @@ int main() {
             }
             cin.ignore(numeric_limits<streamsize>::max(), '\n');
 
+            groupNo = groupNoInput;
             Batch batch(batchCode, groupNo);
             batch.displayBatch();
+        } else if (choice == 8) {
+            sectionTree.saveStudents(dataFile);
+        } else if (choice == 9) {
+            if (!sectionTree.loadStudents(dataFile)) {
+                cout << "No valid saved data could be loaded.\n";
+            }
+        } else if (choice == 10) {
+            SectionOverlapGraph overlapGraph;
+            overlapGraph.buildGraph(sectionTree);
+            overlapGraph.displayGraph();
         } else if (choice == 0) {
             cout << "Program ended.\n";
         } else {
