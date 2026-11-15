@@ -184,8 +184,6 @@ string ResourceGraph::displayGraph() {
 
     return ss.str();
 }
-
-// Disjoint Set
 void DisjointSet::add(string x) {
     parent[x] = x;
     rankValue[x] = 0;
