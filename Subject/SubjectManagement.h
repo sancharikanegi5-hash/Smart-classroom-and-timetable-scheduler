@@ -3,6 +3,9 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
+#include <string>
+#include <unordered_map>
 using namespace std;
 
 class Subject {
@@ -20,12 +23,6 @@ public:
     void displaySubject();
     void displaySubject(int minCredits);
 };
-#ifndef SUBJECTHASH_H
-#define SUBJECTHASH_H
-
-#include <string>
-using namespace std;
-
 const int TABLE_SIZE = 10;
 
 struct SubjectEntry {
@@ -48,6 +45,46 @@ public:
     void searchSubject(string code);
     void deleteSubject(string code);
     void displaySubjects();
+}
+
+struct Resource {
+    string id;
+    string name;
+    string type;
+
+    Resource(string, string, string);
+};
+
+template <class T>
+class Repository {
+private:
+    vector<T> items;
+
+public:
+    void add(T item);
+    T* get(int index);
+    int size();
+};
+
+class ResourceGraph {
+private:
+    unordered_map<string, vector<string>> adj;
+
+public:
+    void addConflict(string a, string b);
+    string displayGraph();
+};
+
+class DisjointSet {
+private:
+    unordered_map<string, string> parent;
+    unordered_map<string, int> rankValue;
+
+public:
+    void add(string x);
+    string find(string x);
+    void unite(string a, string b);
+    bool isSameSet(string a, string b);
 };
 
 #endif
