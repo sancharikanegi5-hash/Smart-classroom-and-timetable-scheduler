@@ -2,10 +2,6 @@
 #define TIMESLOT_REQUEST_H
 #include<string>
 #include<vector>
-#include<map>
-#include<exception>
-#include<stdexcept>
-
 using namespace std;
 
 enum Day { MON,TUE,WED,THU,FRI,SAT};
