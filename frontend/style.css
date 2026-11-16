@@ -1,7 +1,3 @@
-/* =========================================================
-   Smart Timetable Scheduler - College Software Interface
-   Academic, Clean, Functional, and Professional Design
-   ========================================================= */
 
 *, *::before, *::after {
     box-sizing: border-box;
@@ -18,9 +14,6 @@ body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* =========================================================
-   APP HEADER (Traditional Academic Bar)
-   ========================================================= */
 .app-header {
     background-color: #0f172a;
     color: #ffffff;
@@ -112,18 +105,15 @@ body {
     background-color: #059669;
 }
 
-/* =========================================================
-   MAIN PORTAL LAYOUT
-   ========================================================= */
+
 .portal-main {
     max-width: 1240px;
     margin: 15px auto 40px;
     padding: 0 15px;
 }
 
-/* =========================================================
-   NAVIGATION TABS
-   ========================================================= */
+
+
 .portal-nav-tabs {
     display: flex;
     background-color: #e2e8f0;
